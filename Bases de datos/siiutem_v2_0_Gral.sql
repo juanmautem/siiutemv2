@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-08-2020 a las 18:06:38
+-- Tiempo de generación: 05-08-2020 a las 22:41:46
 -- Versión del servidor: 10.4.13-MariaDB
 -- Versión de PHP: 7.2.31
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `siiutem_v2.0`
+-- Base de datos: `siiutemv2.0_gral`
 --
 
 -- --------------------------------------------------------
@@ -51,6 +51,31 @@ CREATE TABLE `alumnos` (
   `tipoAlumno` enum('Nuevo Ingreso','Reingreso','Repetición','Intercambio') DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `alumnoslistado`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `alumnoslistado` (
+`cvePersona` smallint(6)
+,`numCtrl` smallint(6)
+,`Nombre` varchar(40)
+,`Apellido_Pat` varchar(40)
+,`Apellido_Mat` varchar(40)
+,`tipoAlumno` enum('Nuevo Ingreso','Reingreso','Repetición','Intercambio')
+,`FechaIngreso` date
+,`Grupo` smallint(6)
+,`cveCarrera` varchar(5)
+,`carrera` varchar(40)
+,`area` varchar(40)
+,`Cuatrimestre` varchar(10)
+,`Periodo` varchar(26)
+,`periodoTipo` varchar(30)
+,`Tutor` varchar(122)
+,`Email_Institucional` varchar(100)
+);
 
 -- --------------------------------------------------------
 
@@ -710,6 +735,56 @@ CREATE TABLE `periodos` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `personadirecciones`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `personadirecciones` (
+`cvePersona` smallint(6)
+,`Nombre` varchar(40)
+,`Apellido_Pat` varchar(40)
+,`Apellido_Mat` varchar(40)
+,`Calle` varchar(35)
+,`numExterior` varchar(10)
+,`numInterior` varchar(10)
+,`codigoPostal` mediumint(9)
+,`Localidad` varchar(100)
+,`Municipio` varchar(30)
+,`Estado` varchar(50)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `personafamiliares`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `personafamiliares` (
+`cvePersona` smallint(6)
+,`cveFamiliar` smallint(6)
+,`nombreFamiliar` varchar(40)
+,`apePatFamiliar` varchar(40)
+,`apeMatFamiliar` varchar(40)
+,`tipoFamiliar` varchar(30)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `personamails`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `personamails` (
+`cvePersona` smallint(6)
+,`Nombre` varchar(40)
+,`Apellido_Pat` varchar(40)
+,`Apellido_Mat` varchar(40)
+,`email` varchar(100)
+,`tipoMail` enum('Personal','Escolar','Trabajo','Otro')
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `personas`
 --
 
@@ -729,6 +804,35 @@ CREATE TABLE `personas` (
   `personAct` tinyint(4) DEFAULT 0,
   `personCreate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `personasfamiliares`
+--
+
+CREATE TABLE `personasfamiliares` (
+  `familiarId` smallint(6) NOT NULL,
+  `famId` smallint(6) DEFAULT NULL,
+  `numPersona` smallint(6) DEFAULT NULL,
+  `tipoFamiliar` smallint(6) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `personatelefonos`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `personatelefonos` (
+`cvePersona` smallint(6)
+,`Nombre` varchar(40)
+,`Apellido_Pat` varchar(40)
+,`Apellido_Mat` varchar(40)
+,`Telefono` varchar(15)
+,`tipoTelefono` enum('Casa','Celular','Oficina','Otro')
+,`Extencion` smallint(6)
+);
 
 -- --------------------------------------------------------
 
@@ -884,6 +988,18 @@ CREATE TABLE `tipodocumento` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `tipofamiliares`
+--
+
+CREATE TABLE `tipofamiliares` (
+  `tipoFamId` smallint(6) NOT NULL,
+  `tFamName` varchar(30) NOT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `tipotrabajador`
 --
 
@@ -909,6 +1025,55 @@ CREATE TABLE `trabajadores` (
   `academiaId` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `trabajadoresdatosgrales`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `trabajadoresdatosgrales` (
+`cvePersona` smallint(6)
+,`numeroTrabajador` smallint(6)
+,`Nombre` varchar(40)
+,`Apellido_Pat` varchar(40)
+,`Apellido_Mat` varchar(40)
+,`Tipo_Trabajador` varchar(30)
+,`Puesto` varchar(30)
+,`Area_Adscripcion` varchar(30)
+,`Departamento` varchar(30)
+,`Email_Institucional` varchar(100)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `trabajadores_puesto`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `trabajadores_puesto` (
+`cvePersona` smallint(6)
+,`numeroTrabajador` smallint(6)
+,`Nombre` varchar(40)
+,`Apellido_Pat` varchar(40)
+,`Apellido_Mat` varchar(40)
+,`Puesto` varchar(30)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `trabajadores_tipo`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `trabajadores_tipo` (
+`cvePersona` smallint(6)
+,`numeroTrabajador` smallint(6)
+,`Nombre` varchar(40)
+,`Apellido_Pat` varchar(40)
+,`Apellido_Mat` varchar(40)
+,`Tipo_Trabajador` varchar(30)
+);
 
 -- --------------------------------------------------------
 
@@ -940,6 +1105,78 @@ CREATE TABLE `unidades` (
   `hojaAsId` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `alumnoslistado`
+--
+DROP TABLE IF EXISTS `alumnoslistado`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `alumnoslistado`  AS  select `p`.`personId` AS `cvePersona`,`a`.`numCtrl` AS `numCtrl`,`p`.`personName` AS `Nombre`,`p`.`personLn1` AS `Apellido_Pat`,`p`.`personLn2` AS `Apellido_Mat`,`a`.`tipoAlumno` AS `tipoAlumno`,`a`.`fechaReg` AS `FechaIngreso`,`t`.`cveGrupo` AS `Grupo`,`c`.`cveCarrera` AS `cveCarrera`,`c`.`carreraName` AS `carrera`,`c`.`carreraEsp` AS `area`,`g`.`cuatri` AS `Cuatrimestre`,concat(`pr`.`periodo`,`pr`.`periodoY`) AS `Periodo`,`pr`.`periodoTipo` AS `periodoTipo`,concat(`tut`.`personName`,' ',`tut`.`personLn1`,' ',`tut`.`personLn2`) AS `Tutor`,`em`.`email` AS `Email_Institucional` from ((((((((`personas` `p` join `alumnos` `a` on(`a`.`personId` = `p`.`personId`)) join `grupos` `g` on(`g`.`grupoId` = `a`.`grupoId`)) join `carreras` `c` on(`c`.`carreraId` = `g`.`carreraId`)) join `periodos` `pr` on(`pr`.`periodoId` = `g`.`periodoId`)) join `tutores` `t` on(`t`.`cveGrupo` = `g`.`cveGpo`)) join `trabajadores` `tr` on(`t`.`cveTrabajador` = `tr`.`cveTrabajador`)) join `personas` `tut` on(`tr`.`personId` = `tut`.`personId`)) join `emails` `em` on(`em`.`personId` = `p`.`personId`)) where `em`.`mailTipo` = 'Escolar' ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `personadirecciones`
+--
+DROP TABLE IF EXISTS `personadirecciones`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `personadirecciones`  AS  select `p`.`personId` AS `cvePersona`,`p`.`personName` AS `Nombre`,`p`.`personLn1` AS `Apellido_Pat`,`p`.`personLn2` AS `Apellido_Mat`,`d`.`calleDir` AS `Calle`,`d`.`numExtDir` AS `numExterior`,`d`.`numIntDir` AS `numInterior`,`d`.`codPostDir` AS `codigoPostal`,`l`.`locName` AS `Localidad`,`l`.`locMun` AS `Municipio`,`l`.`locEdo` AS `Estado` from ((`personas` `p` join `direcciones` `d` on(`p`.`personId` = `d`.`personId`)) join `localidades` `l` on(`l`.`codPost` = `d`.`codPostDir`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `personafamiliares`
+--
+DROP TABLE IF EXISTS `personafamiliares`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `personafamiliares`  AS  select `p`.`personId` AS `cvePersona`,`pf`.`numPersona` AS `cveFamiliar`,`ppf`.`personName` AS `nombreFamiliar`,`ppf`.`personLn1` AS `apePatFamiliar`,`ppf`.`personLn2` AS `apeMatFamiliar`,`tf`.`tFamName` AS `tipoFamiliar` from (((`personas` `p` join `personasfamiliares` `pf` on(`p`.`personId` = `pf`.`numPersona`)) join `personas` `ppf` on(`pf`.`famId` = `ppf`.`personId`)) join `tipofamiliares` `tf` on(`tf`.`tipoFamId` = `pf`.`tipoFamiliar`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `personamails`
+--
+DROP TABLE IF EXISTS `personamails`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `personamails`  AS  select `p`.`personId` AS `cvePersona`,`p`.`personName` AS `Nombre`,`p`.`personLn1` AS `Apellido_Pat`,`p`.`personLn2` AS `Apellido_Mat`,`em`.`email` AS `email`,`em`.`mailTipo` AS `tipoMail` from (`personas` `p` join `emails` `em` on(`p`.`personId` = `em`.`personId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `personatelefonos`
+--
+DROP TABLE IF EXISTS `personatelefonos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `personatelefonos`  AS  select `p`.`personId` AS `cvePersona`,`p`.`personName` AS `Nombre`,`p`.`personLn1` AS `Apellido_Pat`,`p`.`personLn2` AS `Apellido_Mat`,`t`.`telNum` AS `Telefono`,`t`.`telTipo` AS `tipoTelefono`,`t`.`telExt` AS `Extencion` from (`personas` `p` join `telefonos` `t` on(`p`.`personId` = `t`.`personId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `trabajadoresdatosgrales`
+--
+DROP TABLE IF EXISTS `trabajadoresdatosgrales`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `trabajadoresdatosgrales`  AS  select `p`.`personId` AS `cvePersona`,`t`.`cveTrabajador` AS `numeroTrabajador`,`p`.`personName` AS `Nombre`,`p`.`personLn1` AS `Apellido_Pat`,`p`.`personLn2` AS `Apellido_Mat`,`tt`.`tTName` AS `Tipo_Trabajador`,`pt`.`puestoName` AS `Puesto`,`ad`.`areaName` AS `Area_Adscripcion`,`dpto`.`deptoName` AS `Departamento`,`em`.`email` AS `Email_Institucional` from ((((((`personas` `p` join `trabajadores` `t` on(`t`.`personId` = `p`.`personId`)) join `tipotrabajador` `tt` on(`t`.`tipoTrab` = `tt`.`tipoTrab`)) join `puestos` `pt` on(`t`.`puestoId` = `pt`.`puestoId`)) join `areaadscripcion` `ad` on(`t`.`areaAdsc` = `ad`.`areaId`)) join `departamentos` `dpto` on(`ad`.`deptoId` = `dpto`.`deptoId`)) join `emails` `em` on(`em`.`personId` = `p`.`personId`)) where `em`.`mailTipo` = 'Escolar' ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `trabajadores_puesto`
+--
+DROP TABLE IF EXISTS `trabajadores_puesto`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `trabajadores_puesto`  AS  select `p`.`personId` AS `cvePersona`,`t`.`cveTrabajador` AS `numeroTrabajador`,`p`.`personName` AS `Nombre`,`p`.`personLn1` AS `Apellido_Pat`,`p`.`personLn2` AS `Apellido_Mat`,`pt`.`puestoName` AS `Puesto` from ((`personas` `p` join `trabajadores` `t` on(`t`.`personId` = `p`.`personId`)) join `puestos` `pt` on(`t`.`puestoId` = `pt`.`puestoId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `trabajadores_tipo`
+--
+DROP TABLE IF EXISTS `trabajadores_tipo`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `trabajadores_tipo`  AS  select `p`.`personId` AS `cvePersona`,`t`.`cveTrabajador` AS `numeroTrabajador`,`p`.`personName` AS `Nombre`,`p`.`personLn1` AS `Apellido_Pat`,`p`.`personLn2` AS `Apellido_Mat`,`tt`.`tTName` AS `Tipo_Trabajador` from ((`personas` `p` join `trabajadores` `t` on(`t`.`personId` = `p`.`personId`)) join `tipotrabajador` `tt` on(`t`.`tipoTrab` = `tt`.`tipoTrab`)) ;
 
 --
 -- Índices para tablas volcadas
@@ -1285,6 +1522,13 @@ ALTER TABLE `personas`
   ADD PRIMARY KEY (`personId`);
 
 --
+-- Indices de la tabla `personasfamiliares`
+--
+ALTER TABLE `personasfamiliares`
+  ADD PRIMARY KEY (`familiarId`),
+  ADD KEY `tipoFamiliar` (`tipoFamiliar`);
+
+--
 -- Indices de la tabla `planclase`
 --
 ALTER TABLE `planclase`
@@ -1340,6 +1584,12 @@ ALTER TABLE `tipocurso`
 --
 ALTER TABLE `tipodocumento`
   ADD PRIMARY KEY (`tdocId`);
+
+--
+-- Indices de la tabla `tipofamiliares`
+--
+ALTER TABLE `tipofamiliares`
+  ADD PRIMARY KEY (`tipoFamId`);
 
 --
 -- Indices de la tabla `tipotrabajador`
@@ -1661,6 +1911,12 @@ ALTER TABLE `personas`
   MODIFY `personId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `personasfamiliares`
+--
+ALTER TABLE `personasfamiliares`
+  MODIFY `familiarId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `planclase`
 --
 ALTER TABLE `planclase`
@@ -1713,6 +1969,12 @@ ALTER TABLE `tipocurso`
 --
 ALTER TABLE `tipodocumento`
   MODIFY `tdocId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tipofamiliares`
+--
+ALTER TABLE `tipofamiliares`
+  MODIFY `tipoFamId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `tipotrabajador`
@@ -1950,6 +2212,12 @@ ALTER TABLE `matunidad`
 ALTER TABLE `metunidad`
   ADD CONSTRAINT `metunidad_ibfk_1` FOREIGN KEY (`metEnsId`) REFERENCES `metenseñanza` (`metEnsId`),
   ADD CONSTRAINT `metunidad_ibfk_2` FOREIGN KEY (`unidadId`) REFERENCES `unidades` (`unidadId`);
+
+--
+-- Filtros para la tabla `personasfamiliares`
+--
+ALTER TABLE `personasfamiliares`
+  ADD CONSTRAINT `personasfamiliares_ibfk_1` FOREIGN KEY (`tipoFamiliar`) REFERENCES `tipofamiliares` (`tipoFamId`);
 
 --
 -- Filtros para la tabla `segplanclase`
