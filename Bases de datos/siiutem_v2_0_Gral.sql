@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-08-2020 a las 22:41:46
+-- Tiempo de generación: 06-08-2020 a las 02:04:39
 -- Versión del servidor: 10.4.13-MariaDB
 -- Versión de PHP: 7.2.31
 
@@ -36,6 +36,7 @@ CREATE TABLE `academias` (
   `secretarioAc` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- Error leyendo datos de la tabla siiutemv2.0_gral.academias: #1064 - Algo está equivocado en su sintax cerca 'FROM `siiutemv2.0_gral`.`academias`' en la linea 1
 
 -- --------------------------------------------------------
 
@@ -535,6 +536,7 @@ CREATE TABLE `hojaasignatura` (
   `hrsTeoricas` smallint(6) DEFAULT NULL,
   `hrsPractica` smallint(6) DEFAULT NULL,
   `hrsSemana` smallint(6) DEFAULT NULL,
+  `carreraId` smallint(6) NOT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -653,6 +655,37 @@ CREATE TABLE `matdidactico` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `materiabibliografia`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `materiabibliografia` (
+`cveMateria` varchar(10)
+,`tipoBibliografia` varchar(30)
+,`nombreFuente` varchar(100)
+,`descripcion` varchar(200)
+,`autor_es` mediumtext
+,`ciudad` varchar(30)
+,`pais` varchar(30)
+,`Editorial` varchar(30)
+,`tipoFuente` varchar(20)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `materiacompetencias`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `materiacompetencias` (
+`cveMateria` varchar(10)
+,`competencia` varchar(30)
+,`tipoCompetencia` varchar(30)
+,`descripcion` varchar(200)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `materias`
 --
 
@@ -665,6 +698,45 @@ CREATE TABLE `materias` (
   `areaconId` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `materiasinfo`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `materiasinfo` (
+`materiaId` smallint(6)
+,`cveMateria` varchar(10)
+,`materia` varchar(50)
+,`cuatrimestre` varchar(10)
+,`objetivo` mediumtext
+,`hrsTeoricas` smallint(6)
+,`hrsPractica` smallint(6)
+,`hrsSemana` smallint(6)
+,`areaConocimiento` varchar(30)
+,`cveCarrera` varchar(5)
+,`Carrera` varchar(40)
+,`Area` varchar(40)
+,`programaEducativo` varchar(30)
+,`cvePrograma` varchar(34)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `materiasunidades`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `materiasunidades` (
+`cveMateria` varchar(10)
+,`unidad` varchar(30)
+,`objetivoUnidad` varchar(200)
+,`horasTeoría` smallint(6)
+,`horasPractica` smallint(6)
+,`resultadoAprendizaje` mediumtext
+,`secuenciaAprendizaje` text
+);
 
 -- --------------------------------------------------------
 
@@ -691,6 +763,18 @@ CREATE TABLE `metenseñanza` (
   `metEnsDesc` varchar(200) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `metodoenseñanzaunidad`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `metodoenseñanzaunidad` (
+`cveUnidad` smallint(6)
+,`metodoEnsenanza` varchar(30)
+,`descripcion` varchar(200)
+);
 
 -- --------------------------------------------------------
 
@@ -1091,6 +1175,21 @@ CREATE TABLE `tutores` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `tutoresgrupo`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `tutoresgrupo` (
+`cveTrabajador` smallint(6)
+,`nombreTutor` varchar(40)
+,`apellidoPatTutor` varchar(40)
+,`apellidoMatTutor` varchar(40)
+,`Grupo` varchar(10)
+,`Carrera` varchar(40)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `unidades`
 --
 
@@ -1109,11 +1208,70 @@ CREATE TABLE `unidades` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `unidadestemas`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `unidadestemas` (
+`cveUnidad` smallint(6)
+,`Tema` varchar(30)
+,`saberTema` mediumtext
+,`SerTema` mediumtext
+,`sabSerTema` mediumtext
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `alumnoslistado`
 --
 DROP TABLE IF EXISTS `alumnoslistado`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `alumnoslistado`  AS  select `p`.`personId` AS `cvePersona`,`a`.`numCtrl` AS `numCtrl`,`p`.`personName` AS `Nombre`,`p`.`personLn1` AS `Apellido_Pat`,`p`.`personLn2` AS `Apellido_Mat`,`a`.`tipoAlumno` AS `tipoAlumno`,`a`.`fechaReg` AS `FechaIngreso`,`t`.`cveGrupo` AS `Grupo`,`c`.`cveCarrera` AS `cveCarrera`,`c`.`carreraName` AS `carrera`,`c`.`carreraEsp` AS `area`,`g`.`cuatri` AS `Cuatrimestre`,concat(`pr`.`periodo`,`pr`.`periodoY`) AS `Periodo`,`pr`.`periodoTipo` AS `periodoTipo`,concat(`tut`.`personName`,' ',`tut`.`personLn1`,' ',`tut`.`personLn2`) AS `Tutor`,`em`.`email` AS `Email_Institucional` from ((((((((`personas` `p` join `alumnos` `a` on(`a`.`personId` = `p`.`personId`)) join `grupos` `g` on(`g`.`grupoId` = `a`.`grupoId`)) join `carreras` `c` on(`c`.`carreraId` = `g`.`carreraId`)) join `periodos` `pr` on(`pr`.`periodoId` = `g`.`periodoId`)) join `tutores` `t` on(`t`.`cveGrupo` = `g`.`cveGpo`)) join `trabajadores` `tr` on(`t`.`cveTrabajador` = `tr`.`cveTrabajador`)) join `personas` `tut` on(`tr`.`personId` = `tut`.`personId`)) join `emails` `em` on(`em`.`personId` = `p`.`personId`)) where `em`.`mailTipo` = 'Escolar' ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `materiabibliografia`
+--
+DROP TABLE IF EXISTS `materiabibliografia`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiabibliografia`  AS  select `m`.`cveMateria` AS `cveMateria`,`b`.`tipoBiblio` AS `tipoBibliografia`,`fb`.`fuenteName` AS `nombreFuente`,`fb`.`fuenteDesc` AS `descripcion`,`fb`.`fuenteAutor` AS `autor_es`,`fb`.`fuenteCiudad` AS `ciudad`,`fb`.`fuentePais` AS `pais`,`fb`.`fuenteEditorial` AS `Editorial`,`fb`.`fuenteTipo` AS `tipoFuente` from (((`materias` `m` join `hojaasignatura` `h` on(`m`.`hojaAsId` = `h`.`hojaAsId`)) join `bibliografias` `b` on(`h`.`hojaAsId` = `b`.`hojaAsId`)) join `fuentebiblio` `fb` on(`b`.`biblioId` = `fb`.`biblioId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `materiacompetencias`
+--
+DROP TABLE IF EXISTS `materiacompetencias`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiacompetencias`  AS  select `m`.`cveMateria` AS `cveMateria`,`c`.`compName` AS `competencia`,`c`.`compTipo` AS `tipoCompetencia`,`c`.`compDesc` AS `descripcion` from (((`materias` `m` join `hojaasignatura` `h` on(`m`.`hojaAsId` = `h`.`hojaAsId`)) join `compmateria` `cm` on(`cm`.`hojaAsId` = `h`.`hojaAsId`)) join `competencias` `c` on(`cm`.`compId` = `c`.`compId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `materiasinfo`
+--
+DROP TABLE IF EXISTS `materiasinfo`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiasinfo`  AS  select `m`.`materiaId` AS `materiaId`,`m`.`cveMateria` AS `cveMateria`,`m`.`materiaName` AS `materia`,`ha`.`cuatri` AS `cuatrimestre`,`ha`.`objetivoMat` AS `objetivo`,`ha`.`hrsTeoricas` AS `hrsTeoricas`,`ha`.`hrsPractica` AS `hrsPractica`,`ha`.`hrsSemana` AS `hrsSemana`,`ac`.`areaConName` AS `areaConocimiento`,`ca`.`cveCarrera` AS `cveCarrera`,`ca`.`carreraName` AS `Carrera`,`ca`.`carreraEsp` AS `Area`,`pe`.`programaName` AS `programaEducativo`,concat(`pe`.`cvePrograma`,`pe`.`programaY`) AS `cvePrograma` from ((((`materias` `m` join `hojaasignatura` `ha` on(`m`.`hojaAsId` = `ha`.`hojaAsId`)) join `carreras` `ca` on(`ca`.`carreraId` = `ha`.`carreraId`)) join `areasconocimiento` `ac` on(`m`.`areaconId` = `ac`.`areaConId`)) join `programaaeducativo` `pe` on(`pe`.`carreraId` = `ca`.`carreraId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `materiasunidades`
+--
+DROP TABLE IF EXISTS `materiasunidades`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiasunidades`  AS  select `m`.`cveMateria` AS `cveMateria`,`u`.`unidadName` AS `unidad`,`u`.`unidadObj` AS `objetivoUnidad`,`u`.`hrsTUnidad` AS `horasTeoría`,`u`.`hrsPUnidad` AS `horasPractica`,`u`.`resultAp` AS `resultadoAprendizaje`,`u`.`secAp` AS `secuenciaAprendizaje` from ((`materias` `m` join `hojaasignatura` `h` on(`m`.`hojaAsId` = `h`.`hojaAsId`)) join `unidades` `u` on(`u`.`hojaAsId` = `h`.`hojaAsId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `metodoenseñanzaunidad`
+--
+DROP TABLE IF EXISTS `metodoenseñanzaunidad`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `metodoenseñanzaunidad`  AS  select `u`.`unidadId` AS `cveUnidad`,`me`.`metEnsName` AS `metodoEnsenanza`,`me`.`metEnsDesc` AS `descripcion` from ((`unidades` `u` join `metunidad` `mu` on(`mu`.`unidadId` = `u`.`unidadId`)) join `metenseñanza` `me` on(`mu`.`metEnsId` = `me`.`metEnsId`)) ;
 
 -- --------------------------------------------------------
 
@@ -1177,6 +1335,24 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 DROP TABLE IF EXISTS `trabajadores_tipo`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `trabajadores_tipo`  AS  select `p`.`personId` AS `cvePersona`,`t`.`cveTrabajador` AS `numeroTrabajador`,`p`.`personName` AS `Nombre`,`p`.`personLn1` AS `Apellido_Pat`,`p`.`personLn2` AS `Apellido_Mat`,`tt`.`tTName` AS `Tipo_Trabajador` from ((`personas` `p` join `trabajadores` `t` on(`t`.`personId` = `p`.`personId`)) join `tipotrabajador` `tt` on(`t`.`tipoTrab` = `tt`.`tipoTrab`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `tutoresgrupo`
+--
+DROP TABLE IF EXISTS `tutoresgrupo`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `tutoresgrupo`  AS  select `t`.`cveTrabajador` AS `cveTrabajador`,`p`.`personName` AS `nombreTutor`,`p`.`personLn1` AS `apellidoPatTutor`,`p`.`personLn2` AS `apellidoMatTutor`,`g`.`cveGpo` AS `Grupo`,`c`.`carreraName` AS `Carrera` from ((((`personas` `p` join `trabajadores` `t` on(`p`.`personId` = `t`.`personId`)) join `tutores` `tut` on(`tut`.`cveTrabajador` = `t`.`cveTrabajador`)) join `grupos` `g` on(`tut`.`cveGrupo` = `g`.`cveGpo`)) join `carreras` `c` on(`c`.`carreraId` = `g`.`carreraId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `unidadestemas`
+--
+DROP TABLE IF EXISTS `unidadestemas`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `unidadestemas`  AS  select `u`.`unidadId` AS `cveUnidad`,`t`.`temaName` AS `Tema`,`t`.`saberTema` AS `saberTema`,`t`.`serTema` AS `SerTema`,`t`.`sabSerTema` AS `sabSerTema` from (`unidades` `u` join `temaunidad` `t` on(`u`.`unidadId` = `t`.`unidadId`)) ;
 
 --
 -- Índices para tablas volcadas
