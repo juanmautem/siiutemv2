@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-08-2020 a las 02:04:39
+-- Tiempo de generación: 11-08-2020 a las 01:25:51
 -- Versión del servidor: 10.4.13-MariaDB
 -- Versión de PHP: 7.2.31
 
@@ -36,7 +36,6 @@ CREATE TABLE `academias` (
   `secretarioAc` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- Error leyendo datos de la tabla siiutemv2.0_gral.academias: #1064 - Algo está equivocado en su sintax cerca 'FROM `siiutemv2.0_gral`.`academias`' en la linea 1
 
 -- --------------------------------------------------------
 
@@ -115,7 +114,9 @@ CREATE TABLE `asigmateria` (
   `asigId` smallint(6) NOT NULL,
   `docenteId` smallint(6) DEFAULT NULL,
   `materiaId` smallint(6) DEFAULT NULL,
-  `createDate` datetime DEFAULT current_timestamp()
+  `periodoId` smallint(6) NOT NULL,
+  `createDate` datetime DEFAULT current_timestamp(),
+  `carreraId` smallint(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -416,6 +417,21 @@ CREATE TABLE `emails` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `encuadreplanac`
+--
+
+CREATE TABLE `encuadreplanac` (
+  `encuadreId` smallint(6) NOT NULL,
+  `planAcId` smallint(6) DEFAULT NULL,
+  `unidadId` smallint(6) DEFAULT NULL,
+  `encSemanas` varchar(50) DEFAULT NULL,
+  `encPorUnidad` decimal(4,2) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `estaprepc`
 --
 
@@ -473,6 +489,45 @@ CREATE TABLE `evidpc` (
   `detPCId` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `foraca03a_r0_encuadre`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `foraca03a_r0_encuadre` (
+`cvePlanAcad` smallint(6)
+,`cveUnidad` smallint(6)
+,`nombreUnidad` varchar(30)
+,`numeroUnidad` varchar(11)
+,`semanas` varchar(50)
+,`porcentajeUnidad` decimal(4,2)
+,`recSemana` varchar(50)
+,`recPor` decimal(4,2)
+,`extSemana` varchar(50)
+,`extPor` decimal(4,2)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `foraca03a_r0_gral`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `foraca03a_r0_gral` (
+`cvePlanAcad` smallint(6)
+,`nombrePlan` varchar(20)
+,`descripcionPA` varchar(200)
+,`departamento` varchar(30)
+,`academiaName` varchar(30)
+,`cveMateria` smallint(6)
+,`materia` varchar(50)
+,`fechaElaboracion` date
+,`fechaAutorizacion` date
+,`estado` enum('Borrador','Creado','En revisión','Aprobado con Observaciones','Rechazado con Observaciones','Rechazado','Aceptado')
+,`tipoCurso` varchar(30)
+);
 
 -- --------------------------------------------------------
 
@@ -539,6 +594,30 @@ CREATE TABLE `hojaasignatura` (
   `carreraId` smallint(6) NOT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `horagrupomaterias`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `horagrupomaterias` (
+`grupo` varchar(10)
+,`carrera` varchar(40)
+,`periodo` varchar(27)
+,`periodoTipo` varchar(30)
+,`cvePrograma` varchar(30)
+,`materia` varchar(50)
+,`cveMateria` varchar(10)
+,`hrInicio` time
+,`hrFin` time
+,`diaSem` varchar(10)
+,`docenteId` smallint(6)
+,`cveDirector` smallint(6)
+,`cveDirAcademico` smallint(6)
+,`fechaElaboracion` date
+,`fechaAutorizacion` date
+);
 
 -- --------------------------------------------------------
 
@@ -702,6 +781,25 @@ CREATE TABLE `materias` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `materiasdocentes`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `materiasdocentes` (
+`cveMateria` varchar(10)
+,`materia` varchar(50)
+,`cvePersona` smallint(6)
+,`nombreDocente` varchar(40)
+,`apellidoPat` varchar(40)
+,`apellidoMat` varchar(40)
+,`periodo` varchar(27)
+,`periodoTipo` varchar(30)
+,`carrera` varchar(40)
+,`area` varchar(40)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura Stand-in para la vista `materiasinfo`
 -- (Véase abajo para la vista actual)
 --
@@ -730,6 +828,8 @@ CREATE TABLE `materiasinfo` (
 --
 CREATE TABLE `materiasunidades` (
 `cveMateria` varchar(10)
+,`numeroUnidad` varchar(11)
+,`cveUnidad` smallint(6)
 ,`unidad` varchar(30)
 ,`objetivoUnidad` varchar(200)
 ,`horasTeoría` smallint(6)
@@ -772,6 +872,7 @@ CREATE TABLE `metenseñanza` (
 --
 CREATE TABLE `metodoenseñanzaunidad` (
 `cveUnidad` smallint(6)
+,`cveMetodo` smallint(6)
 ,`metodoEnsenanza` varchar(30)
 ,`descripcion` varchar(200)
 );
@@ -958,7 +1059,7 @@ CREATE TABLE `planeacionacademica` (
   `planAcDesc` varchar(200) DEFAULT NULL,
   `academiaId` smallint(6) DEFAULT NULL,
   `materiaId` smallint(6) DEFAULT NULL,
-  `tCrusoId` smallint(6) DEFAULT NULL,
+  `tCursoId` smallint(6) DEFAULT NULL,
   `deptoId` smallint(6) DEFAULT NULL,
   `integradorId` smallint(6) DEFAULT NULL,
   `feElabPA` date DEFAULT NULL,
@@ -993,6 +1094,22 @@ CREATE TABLE `puestos` (
   `puestoName` varchar(30) NOT NULL,
   `puestoDesc` varchar(200) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `recuextraplanac`
+--
+
+CREATE TABLE `recuextraplanac` (
+  `rePAId` smallint(6) NOT NULL,
+  `planAcId` smallint(6) DEFAULT NULL,
+  `recSemana` varchar(50) DEFAULT NULL,
+  `recPor` decimal(4,2) DEFAULT NULL,
+  `extSemana` varchar(50) DEFAULT NULL,
+  `extPor` decimal(4,2) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1050,7 +1167,7 @@ CREATE TABLE `temaunidad` (
 --
 
 CREATE TABLE `tipocurso` (
-  `tCrusoId` smallint(6) NOT NULL,
+  `tCursoId` smallint(6) NOT NULL,
   `tCursoName` varchar(30) NOT NULL,
   `tCursoDesc` varchar(200) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
@@ -1195,6 +1312,7 @@ CREATE TABLE `tutoresgrupo` (
 
 CREATE TABLE `unidades` (
   `unidadId` smallint(6) NOT NULL,
+  `unidadNum` tinyint(4) NOT NULL,
   `unidadName` varchar(30) NOT NULL,
   `unidadObj` varchar(200) DEFAULT NULL,
   `hrsTUnidad` smallint(6) DEFAULT NULL,
@@ -1231,6 +1349,33 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `foraca03a_r0_encuadre`
+--
+DROP TABLE IF EXISTS `foraca03a_r0_encuadre`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `foraca03a_r0_encuadre`  AS  select `pa`.`planAcId` AS `cvePlanAcad`,`u`.`unidadId` AS `cveUnidad`,`u`.`unidadName` AS `nombreUnidad`,concat('Unidad ',`u`.`unidadNum`) AS `numeroUnidad`,`e`.`encSemanas` AS `semanas`,`e`.`encPorUnidad` AS `porcentajeUnidad`,`re`.`recSemana` AS `recSemana`,`re`.`recPor` AS `recPor`,`re`.`extSemana` AS `extSemana`,`re`.`extPor` AS `extPor` from (((`planeacionacademica` `pa` join `encuadreplanac` `e` on(`pa`.`planAcId` = `e`.`planAcId`)) join `recuextraplanac` `re` on(`pa`.`planAcId` = `re`.`planAcId`)) join `unidades` `u` on(`e`.`unidadId` = `u`.`unidadId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `foraca03a_r0_gral`
+--
+DROP TABLE IF EXISTS `foraca03a_r0_gral`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `foraca03a_r0_gral`  AS  select `pa`.`planAcId` AS `cvePlanAcad`,`pa`.`planAcName` AS `nombrePlan`,`pa`.`planAcDesc` AS `descripcionPA`,`dpto`.`deptoName` AS `departamento`,`ac`.`academiaName` AS `academiaName`,`m`.`materiaId` AS `cveMateria`,`m`.`materiaName` AS `materia`,`pa`.`feElabPA` AS `fechaElaboracion`,`pa`.`feAutPA` AS `fechaAutorizacion`,`pa`.`statusPAc` AS `estado`,`tc`.`tCursoName` AS `tipoCurso` from ((((`planeacionacademica` `pa` join `materias` `m` on(`pa`.`materiaId` = `m`.`materiaId`)) join `academias` `ac` on(`pa`.`academiaId` = `ac`.`academiaId`)) join `departamentos` `dpto` on(`pa`.`deptoId` = `dpto`.`deptoId`)) join `tipocurso` `tc` on(`pa`.`tCursoId` = `tc`.`tCursoId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `horagrupomaterias`
+--
+DROP TABLE IF EXISTS `horagrupomaterias`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `horagrupomaterias`  AS  select `g`.`cveGpo` AS `grupo`,`car`.`carreraName` AS `carrera`,concat(`per`.`periodo`,' ',`per`.`periodoY`) AS `periodo`,`per`.`periodoTipo` AS `periodoTipo`,`pr`.`cvePrograma` AS `cvePrograma`,`m`.`materiaName` AS `materia`,`m`.`cveMateria` AS `cveMateria`,`dhg`.`hrInicio` AS `hrInicio`,`dhg`.`hrFin` AS `hrFin`,`dhg`.`diaSem` AS `diaSem`,`am`.`docenteId` AS `docenteId`,`hg`.`elaboroId` AS `cveDirector`,`hg`.`autorizoId` AS `cveDirAcademico`,`hg`.`feElabHG` AS `fechaElaboracion`,`hg`.`feAutHG` AS `fechaAutorizacion` from (((((((`grupos` `g` join `horariogrupo` `hg` on(`g`.`grupoId` = `hg`.`grupoId`)) join `periodos` `per` on(`per`.`periodoId` = `g`.`periodoId`)) join `carreras` `car` on(`car`.`carreraId` = `g`.`carreraId`)) join `programaaeducativo` `pr` on(`pr`.`programaId` = `hg`.`programaId`)) join `dethoragpo` `dhg` on(`dhg`.`horaGpoId` = `hg`.`horaGpoId`)) join `materias` `m` on(`dhg`.`materiaId` = `m`.`materiaId`)) join `asigmateria` `am` on(`am`.`materiaId` = `m`.`materiaId`)) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `materiabibliografia`
 --
 DROP TABLE IF EXISTS `materiabibliografia`;
@@ -1249,6 +1394,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `materiasdocentes`
+--
+DROP TABLE IF EXISTS `materiasdocentes`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiasdocentes`  AS  select `m`.`cveMateria` AS `cveMateria`,`m`.`materiaName` AS `materia`,`p`.`personId` AS `cvePersona`,`p`.`personName` AS `nombreDocente`,`p`.`personLn1` AS `apellidoPat`,`p`.`personLn2` AS `apellidoMat`,concat(`per`.`periodo`,' ',`per`.`periodoY`) AS `periodo`,`per`.`periodoTipo` AS `periodoTipo`,`c`.`carreraName` AS `carrera`,`c`.`carreraEsp` AS `area` from ((((`materias` `m` join `asigmateria` `am` on(`am`.`materiaId` = `m`.`materiaId`)) join `periodos` `per` on(`per`.`periodoId` = `am`.`periodoId`)) join `personas` `p` on(`p`.`personId` = `am`.`docenteId`)) join `carreras` `c` on(`c`.`carreraId` = `am`.`carreraId`)) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `materiasinfo`
 --
 DROP TABLE IF EXISTS `materiasinfo`;
@@ -1262,7 +1416,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `materiasunidades`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiasunidades`  AS  select `m`.`cveMateria` AS `cveMateria`,`u`.`unidadName` AS `unidad`,`u`.`unidadObj` AS `objetivoUnidad`,`u`.`hrsTUnidad` AS `horasTeoría`,`u`.`hrsPUnidad` AS `horasPractica`,`u`.`resultAp` AS `resultadoAprendizaje`,`u`.`secAp` AS `secuenciaAprendizaje` from ((`materias` `m` join `hojaasignatura` `h` on(`m`.`hojaAsId` = `h`.`hojaAsId`)) join `unidades` `u` on(`u`.`hojaAsId` = `h`.`hojaAsId`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiasunidades`  AS  select `m`.`cveMateria` AS `cveMateria`,concat('Unidad ',`u`.`unidadNum`) AS `numeroUnidad`,`u`.`unidadId` AS `cveUnidad`,`u`.`unidadName` AS `unidad`,`u`.`unidadObj` AS `objetivoUnidad`,`u`.`hrsTUnidad` AS `horasTeoría`,`u`.`hrsPUnidad` AS `horasPractica`,`u`.`resultAp` AS `resultadoAprendizaje`,`u`.`secAp` AS `secuenciaAprendizaje` from ((`materias` `m` join `hojaasignatura` `h` on(`m`.`hojaAsId` = `h`.`hojaAsId`)) join `unidades` `u` on(`u`.`hojaAsId` = `h`.`hojaAsId`)) ;
 
 -- --------------------------------------------------------
 
@@ -1271,7 +1425,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `metodoenseñanzaunidad`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `metodoenseñanzaunidad`  AS  select `u`.`unidadId` AS `cveUnidad`,`me`.`metEnsName` AS `metodoEnsenanza`,`me`.`metEnsDesc` AS `descripcion` from ((`unidades` `u` join `metunidad` `mu` on(`mu`.`unidadId` = `u`.`unidadId`)) join `metenseñanza` `me` on(`mu`.`metEnsId` = `me`.`metEnsId`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `metodoenseñanzaunidad`  AS  select `u`.`unidadId` AS `cveUnidad`,`me`.`metEnsId` AS `cveMetodo`,`me`.`metEnsName` AS `metodoEnsenanza`,`me`.`metEnsDesc` AS `descripcion` from ((`unidades` `u` join `metunidad` `mu` on(`mu`.`unidadId` = `u`.`unidadId`)) join `metenseñanza` `me` on(`mu`.`metEnsId` = `me`.`metEnsId`)) ;
 
 -- --------------------------------------------------------
 
@@ -1545,6 +1699,13 @@ ALTER TABLE `emails`
   ADD KEY `personId` (`personId`);
 
 --
+-- Indices de la tabla `encuadreplanac`
+--
+ALTER TABLE `encuadreplanac`
+  ADD PRIMARY KEY (`encuadreId`),
+  ADD KEY `planAcId` (`planAcId`);
+
+--
 -- Indices de la tabla `estaprepc`
 --
 ALTER TABLE `estaprepc`
@@ -1729,6 +1890,12 @@ ALTER TABLE `puestos`
   ADD PRIMARY KEY (`puestoId`);
 
 --
+-- Indices de la tabla `recuextraplanac`
+--
+ALTER TABLE `recuextraplanac`
+  ADD PRIMARY KEY (`rePAId`);
+
+--
 -- Indices de la tabla `segplanclase`
 --
 ALTER TABLE `segplanclase`
@@ -1753,7 +1920,7 @@ ALTER TABLE `temaunidad`
 -- Indices de la tabla `tipocurso`
 --
 ALTER TABLE `tipocurso`
-  ADD PRIMARY KEY (`tCrusoId`);
+  ADD PRIMARY KEY (`tCursoId`);
 
 --
 -- Indices de la tabla `tipodocumento`
@@ -1949,6 +2116,12 @@ ALTER TABLE `emails`
   MODIFY `mailId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `encuadreplanac`
+--
+ALTER TABLE `encuadreplanac`
+  MODIFY `encuadreId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `estaprepc`
 --
 ALTER TABLE `estaprepc`
@@ -2117,6 +2290,12 @@ ALTER TABLE `puestos`
   MODIFY `puestoId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `recuextraplanac`
+--
+ALTER TABLE `recuextraplanac`
+  MODIFY `rePAId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `segplanclase`
 --
 ALTER TABLE `segplanclase`
@@ -2138,7 +2317,7 @@ ALTER TABLE `temaunidad`
 -- AUTO_INCREMENT de la tabla `tipocurso`
 --
 ALTER TABLE `tipocurso`
-  MODIFY `tCrusoId` smallint(6) NOT NULL AUTO_INCREMENT;
+  MODIFY `tCursoId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `tipodocumento`
@@ -2314,6 +2493,12 @@ ALTER TABLE `elabplanac`
 --
 ALTER TABLE `emails`
   ADD CONSTRAINT `emails_ibfk_1` FOREIGN KEY (`personId`) REFERENCES `personas` (`personId`);
+
+--
+-- Filtros para la tabla `encuadreplanac`
+--
+ALTER TABLE `encuadreplanac`
+  ADD CONSTRAINT `encuadreplanac_ibfk_1` FOREIGN KEY (`planAcId`) REFERENCES `planeacionacademica` (`planAcId`);
 
 --
 -- Filtros para la tabla `estaprepc`

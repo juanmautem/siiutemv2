@@ -171,7 +171,7 @@ CREATE VIEW materiasinfo AS
 
 CREATE VIEW materiasUnidades As
 	select cveMateria,
-	unidadId as cveUnidad,unidadName as unidad, 
+	unidadId as cveUnidad,unidadName as unidad, concat("Unidad ",unidadNum) as numeroUnidad,
 	unidadObj as objetivoUnidad, hrsTUnidad as horasTeoría,
 	hrsPUnidad as horasPractica, resultAp as resultadoAprendizaje, secAp as secuenciaAprendizaje
 	from materias m 
@@ -237,3 +237,136 @@ CREATE VIEW tutoresGrupo As
 	inner join tutores tut on tut.cveTrabajador = t.cveTrabajador
 	inner join grupos g on tut.cveGrupo = g.cveGpo
 	inner join carreras c on c.carreraId = g.carreraId
+
+	/* 06/08/2020 avances*/
+
+/* Vistas horarios */
+
+CREATE VIEW horaGrupoMaterias As
+	SELECT cveGpo as grupo,
+	carreraName as carrera,
+	concat(per.periodo," ",per.periodoY) as periodo, per.periodoTipo,
+	pr.cvePrograma,
+	m.materiaName as materia,
+	m.cveMateria,
+	dhg.hrInicio, dhg.hrFin, dhg.diaSem,
+	am.docenteId,
+	hg.elaboroId as cveDirector,
+	hg.autorizoId as cveDirAcademico,
+	hg.feElabHG as fechaElaboracion,
+	hg.feAutHG as fechaAutorizacion
+	from grupos g
+	inner join horarioGrupo hg on g.grupoId = hg.grupoId
+	inner join periodos per on per.periodoId = g.periodoId
+	inner join carreras car on car.carreraId = g.carreraId
+	inner join programaaeducativo pr on pr.programaId = hg.programaId
+	inner join detHoraGpo dhg on dhg.horaGpoId = hg.horaGpoId
+	inner join materias m on dhg.materiaId = m.materiaId
+	inner join asigmateria am on am.materiaId = m.materiaId
+
+create view materiasdocentes as
+	select
+	m.cveMateria, 
+	m.materiaName as materia,
+	p.personId as cvePersona,
+	p.personName as nombreDocente,
+	p.personLn1 as apellidoPat,
+	p.personLn2 as apellidoMat,
+	concat(per.periodo," ",per.periodoY) as periodo, per.periodoTipo,
+	c.carreraName as carrera,
+	c.carreraEsp as area
+	from materias m 
+	inner join asigmateria am on am.materiaId = m.materiaId
+	inner join periodos per on per.periodoId = am.periodoId
+	inner join personas p on p.personId = am.docenteId
+	inner join carreras c on c.carreraId = am.carreraId
+
+/* 07/08/2020 */
+
+create view FORACA03A_r0_Gral As
+	select pa.planAcId As cvePlanAcad,
+	pa.planAcName As nombrePlan,
+	pa.planAcDesc As descripcionPA,
+	dpto.deptoName as departamento,
+	ac.academiaName As academiaName,
+	m.materiaId as cveMateria,
+	m.materiaName as materia,
+	pa.feElabPA As fechaElaboracion,
+	pa.feAutPA As fechaAutorizacion,
+	pa.statusPAc as estado,
+	tc.tCursoName as tipoCurso
+	FROM planeacionacademica pa 
+	inner join materias m on pa.materiaId = m.materiaId
+	inner join academias ac on pa.academiaId = ac.academiaId
+	inner join departamentos dpto on pa.deptoId = dpto.deptoId
+	inner join tipoCurso tc on pa.tCursoId = tc.tCursoId
+
+create table encuadrePlanAc (
+	encuadreId smallint primary key auto_increment,
+	planAcId smallint,
+	unidadId smallint,
+	encSemanas varchar(50),
+	encPorUnidad decimal(4,2),
+	createdAt datetime default CURRENT_TIMESTAMP,
+	foreign key(planAcId) references planeacionacademica(planAcId)
+);
+create table recuExtraPlanAc (
+	rePAId smallint primary key auto_increment,
+	planAcId smallint,
+	recSemana varchar(50),
+	recPor decimal(4,2),
+	extSemana varchar(50),
+	extPor decimal(4,2),
+	createdAt datetime default CURRENT_TIMESTAMP
+);
+
+create view FORACA03A_r0_Encuadre As
+	select pa.planAcId As cvePlanAcad,
+	u.unidadId as cveUnidad,
+	u.unidadName as nombreUnidad,
+	concat("Unidad ",u.unidadNum) as numeroUnidad,
+	e.encSemanas as semanas,
+	e.encPorUnidad as porcentajeUnidad,
+	re.recSemana, re.recPor, re.extSemana, re.extPor
+	from planeacionacademica pa
+	inner join encuadrePlanAc e on pa.planAcId = e.planAcId
+	inner join recuExtraPlanAc re on pa.planAcId = re.planAcId
+	inner join unidades u on e.unidadId = u.unidadId
+
+create view FORACA03A_r0_secDidactica as
+	select pa.planAcId As cvePlanAcad,
+	u.unidadId as cveUnidad,
+	u.unidadName as unidad,
+	concat("Unidad ",u.unidadNum) as numeroUnidad,
+	ut.Tema,ut.saberTema as conceptual, ut.SerTema as procedimental, ut.saberSerTema as actitudinal,
+
+/*08/08/2020*/
+/*Se generaron tablas para metodos de enseñanza, actividad integradora, instrumentos y tipos de reactivos y evaluacion*/
+create table metEnsUnPA(
+	metEnUPAId smallint primary key auto_increment,
+	planAcId smallint,
+	unidadId smallint,
+	desActividad mediumtext,
+	createdAt datetime default CURRENT_TIMESTAMP
+);
+create table metEnsInPA(
+	metEnInPAId smallint primary key auto_increment,
+	planAcId smallint,
+	unidadId smallint,
+	desActInt mediumtext,
+	createdAt datetime default CURRENT_TIMESTAMP
+);
+create table detMetEnsUnPA(	
+	detMEUPAId smallint primary key auto_increment,
+	metEnsId smallint,
+	metEnUPAId smallint,
+	createdAt datetime default CURRENT_TIMESTAMP
+);
+
+create table recymatPA(
+	rymPAId smallint primary key auto_increment,
+	planAcId smallint,
+	unidadId smallint,
+	matDId smallint,
+	createdAt datetime default CURRENT_TIMESTAMP
+);
