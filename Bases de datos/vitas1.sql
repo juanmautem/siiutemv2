@@ -193,7 +193,8 @@ CREATE VIEW unidadesTemas As
 
 CREATE VIEW materiaBibliografia As
 	select cveMateria,
-	tipoBiblio as tipoBibliografia, 
+	tipoBiblio as tipoBibliografia,
+	fuenteId, 
 	fuenteName as nombreFuente, 
 	fuenteDesc as descripcion,
 	fuenteAutor as autor_es,
@@ -333,12 +334,6 @@ create view FORACA03A_r0_Encuadre As
 	inner join recuExtraPlanAc re on pa.planAcId = re.planAcId
 	inner join unidades u on e.unidadId = u.unidadId
 
-create view FORACA03A_r0_secDidactica as
-	select pa.planAcId As cvePlanAcad,
-	u.unidadId as cveUnidad,
-	u.unidadName as unidad,
-	concat("Unidad ",u.unidadNum) as numeroUnidad,
-	ut.Tema,ut.saberTema as conceptual, ut.SerTema as procedimental, ut.saberSerTema as actitudinal,
 
 /*08/08/2020*/
 /*Se generaron tablas para metodos de enseñanza, actividad integradora, instrumentos y tipos de reactivos y evaluacion*/
@@ -370,3 +365,107 @@ create table recymatPA(
 	matDId smallint,
 	createdAt datetime default CURRENT_TIMESTAMP
 );
+
+/*11/08/2020*/
+create view FORACA03A_r0_secDidactica as
+	select pa.planAcId As cvePlanAcad,
+	u.unidadId as cveUnidad,
+	concat("Unidad ",u.unidadNum) as numeroUnidad,
+	u.unidadName as unidad,
+	u.secAp as secuenciaAprendizaje,
+	u.resultAp as resultadoAprendizaje
+	ut.Tema,ut.saberTema as conceptual, ut.SerTema as procedimental, ut.saberSerTema as actitudinal
+
+/*generar otra consulta para obtener el listado de estrategias de Enseñanza aprendizaje por unidad*/
+create view listaMetEUPA as
+	select pa.planAcId as cvePlanAcad,
+	u.unidadId as cveUnidad,
+	u.unidadName as unidadNombre,
+	met.metEnsName as metodoEnseñanza,
+	met.metEnsDesc as metodoEnseDesc
+	from planeacionacademica as pa
+	inner join metEnsUnPA mu on pa.planAcId = mu.planAcId
+	inner join unidades u on mu.unidadId = u.unidadId
+	inner join detMetEnsUnPA dmu on dmu.metEnUPAId = mu.metEnUPAId
+	inner join metEnseñanza met on met.metEnsId = dmu.metEnsId
+
+/*generar otra consulta para obtener el listado de recursos y materiales didácticos por unidad*/
+create view listaMatEUPA as
+	select pa.planAcId as cvePlanAcad,
+		u.unidadId as cveUnidad,
+		u.unidadName as unidadNombre,
+		mat.matDname as material,
+		mat.matDDesc as materialDesc
+		from planeacionacademica as pa
+		inner join recymatPA rm on pa.planAcId = rm.planAcId
+		inner join unidades u on rm.unidadId = u.unidadId
+		inner join matDidactico mat on mat.matDId = rm.matDI
+
+/*generar otra consulta para obtener el listado de instrumentos de evaluacion por unidad*/
+create view listaInsUPA as
+	select pa.planAcId as cvePlanAcad,
+		u.unidadId as cveUnidad,
+		u.unidadName as unidadNombre,
+		ins.instName as instrumento,
+		ins.instDesc as instrumentoDesc,
+		ins.instCompe as competencia,
+		i.instEvPAPor as porcentaje
+		from planeacionacademica as pa
+		inner join instevpa i on pa.planAcId = i.planAcId
+		inner join instEval ins on ins.instId = i.instId
+		inner join unidades u on i.unidadId = u.unidadId
+
+/*generar otra consulta para obtener el listado de evaluaciones por unidad*/
+create view listaEvalUPA as
+	select pa.planAcId as cvePlanAcad,
+		u.unidadId as cveUnidad,
+		ev.evalPAAuto as autoevaluacion,
+		ev.evalPACoe as coevaluacion, 
+		ev.evalPAHete as hetereogenea,
+		ev.evalPADia as diagnostica,
+		ev.evalPAForm as formativa,
+		ev.evalPASumat as sumativa	
+		from planeacionacademica as pa
+		inner join detPlanAca dp on dp.planAcId = pa.planAcId
+		inner join unidades u on dp.unidadId = u.unidadId
+		inner join evalPA ev on ev.evalPAId = dp.evalPAI
+
+create table anexosPlanAca (
+	anePAId smallint primary key auto_increment,
+	planAcId smallint,
+	dctoId smallint,
+	createdAt datetime default CURRENT_TIMESTAMP,
+	foreign key(planAcId) references planeacionacademica(planAcId)
+);
+
+create table biblioPlanAca(
+	biblioPAId smallint primary key,
+	planAcId smallint,
+	fuenteId smallint,
+	createdAt datetime default CURRENT_TIMESTAMP,
+	foreign key(planAcId) references planeacionacademica(planAcId)
+);
+
+/*generar otra consulta para obtener el listado de bibliografia para cada Plan Academico*/
+create view biblioPA as
+	select p.planAcId as cvePlanAcad,
+		f.fuenteName as tituloFuente,
+		f.fuenteAutor as autor_es,
+		f.fuenteCiudad as ciudad,
+		f.fuentepais as pais,
+		f.fuenteEditorial as editorial,
+		f.fuenteAnio as anio
+		from planeacionacademica p
+		inner join biblioPlanAca bp on bp.planAcId = p.planAcId
+		inner join fuenteBiblio f on bp.fuenteId = f.fuenteId
+
+/*generar otra consulta para obtener el listado de anexos para cada Plan Academico*/
+create view anexosPA as
+	select p.planAcId as cvePlanAcad,
+		d.dctoName as nombreAnexo,
+		d.dctoUrl as ubicacion,
+		td.tdName as tipoAnexo
+		from planeacionacademica p
+		inner join anexosPlanAca a on a.planAcId = p.planAcId
+		inner join documentos d on d.dctoId = a.dctoId
+		inner join tipoDocumento td on td.tdocId = d.tdocI

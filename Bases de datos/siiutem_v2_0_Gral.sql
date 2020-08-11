@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-08-2020 a las 01:25:51
+-- Tiempo de generación: 11-08-2020 a las 22:09:16
 -- Versión del servidor: 10.4.13-MariaDB
 -- Versión de PHP: 7.2.31
 
@@ -76,6 +76,32 @@ CREATE TABLE `alumnoslistado` (
 ,`Tutor` varchar(122)
 ,`Email_Institucional` varchar(100)
 );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `anexospa`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `anexospa` (
+`cvePlanAcad` smallint(6)
+,`nombreAnexo` varchar(30)
+,`ubicacion` varchar(50)
+,`tipoAnexo` varchar(50)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `anexosplanaca`
+--
+
+CREATE TABLE `anexosplanaca` (
+  `anePAId` smallint(6) NOT NULL,
+  `planAcId` smallint(6) DEFAULT NULL,
+  `dctoId` smallint(6) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -158,6 +184,35 @@ CREATE TABLE `bibliografias` (
   `tipoBiblio` varchar(30) DEFAULT NULL,
   `hojaAsId` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `bibliopa`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `bibliopa` (
+`cvePlanAcad` smallint(6)
+,`tituloFuente` varchar(100)
+,`autor_es` mediumtext
+,`ciudad` varchar(30)
+,`pais` varchar(30)
+,`editorial` varchar(30)
+,`anio` smallint(6)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `biblioplanaca`
+--
+
+CREATE TABLE `biblioplanaca` (
+  `biblioPAId` smallint(6) NOT NULL,
+  `planAcId` smallint(6) DEFAULT NULL,
+  `fuenteId` smallint(6) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -273,6 +328,19 @@ CREATE TABLE `dethoragpo` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `detmetensunpa`
+--
+
+CREATE TABLE `detmetensunpa` (
+  `detMEUPAId` smallint(6) NOT NULL,
+  `metEnsId` smallint(6) DEFAULT NULL,
+  `metEnUPAId` smallint(6) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `detmetunipa`
 --
 
@@ -293,6 +361,7 @@ CREATE TABLE `detplanaca` (
   `dPAcaId` smallint(6) NOT NULL,
   `planAcId` smallint(6) DEFAULT NULL,
   `unidadId` smallint(6) DEFAULT NULL,
+  `evalPAId` smallint(11) NOT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -457,7 +526,6 @@ CREATE TABLE `evalpa` (
   `evalPADia` tinyint(4) DEFAULT NULL,
   `evalPAForm` tinyint(4) DEFAULT NULL,
   `evalPASumat` tinyint(4) DEFAULT NULL,
-  `dPAcaId` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -558,6 +626,7 @@ CREATE TABLE `fuentebiblio` (
   `fuentePais` varchar(30) DEFAULT NULL,
   `fuenteEditorial` varchar(30) DEFAULT NULL,
   `fuenteTipo` varchar(20) DEFAULT NULL,
+  `fuenteAnio` smallint(6) NOT NULL,
   `biblioId` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -647,6 +716,7 @@ CREATE TABLE `insteval` (
   `instId` smallint(6) NOT NULL,
   `instName` varchar(30) NOT NULL,
   `instDesc` varchar(200) DEFAULT NULL,
+  `instCompe` enum('Saber','Saber Hacer','Ser','') NOT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -672,7 +742,8 @@ CREATE TABLE `instevalpc` (
 
 CREATE TABLE `instevpa` (
   `instEvPAId` smallint(6) NOT NULL,
-  `evalPAId` smallint(6) DEFAULT NULL,
+  `planAcId` smallint(6) DEFAULT NULL,
+  `unidadId` smallint(6) NOT NULL,
   `instId` smallint(6) DEFAULT NULL,
   `instEvPAPor` tinyint(4) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
@@ -702,6 +773,50 @@ CREATE TABLE `integrador` (
   `inteDesc` mediumtext DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `listainsupa`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `listainsupa` (
+`cvePlanAcad` smallint(6)
+,`cveUnidad` smallint(6)
+,`unidadNombre` varchar(30)
+,`instrumento` varchar(30)
+,`instrumentoDesc` varchar(200)
+,`competencia` enum('Saber','Saber Hacer','Ser','')
+,`porcentaje` tinyint(4)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `listamateupa`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `listamateupa` (
+`cvePlanAcad` smallint(6)
+,`cveUnidad` smallint(6)
+,`unidadNombre` varchar(30)
+,`material` varchar(30)
+,`materialDesc` varchar(200)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `listameteupa`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `listameteupa` (
+`cvePlanAcad` smallint(6)
+,`cveUnidad` smallint(6)
+,`unidadNombre` varchar(30)
+,`metodoEnseñanza` varchar(30)
+,`metodoEnseDesc` varchar(200)
+);
 
 -- --------------------------------------------------------
 
@@ -740,6 +855,7 @@ CREATE TABLE `matdidactico` (
 CREATE TABLE `materiabibliografia` (
 `cveMateria` varchar(10)
 ,`tipoBibliografia` varchar(30)
+,`fuenteId` smallint(6)
 ,`nombreFuente` varchar(100)
 ,`descripcion` varchar(200)
 ,`autor_es` mediumtext
@@ -862,6 +978,34 @@ CREATE TABLE `metenseñanza` (
   `metEnsName` varchar(30) NOT NULL,
   `metEnsDesc` varchar(200) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `metensinpa`
+--
+
+CREATE TABLE `metensinpa` (
+  `metEnInPAId` smallint(6) NOT NULL,
+  `planAcId` smallint(6) DEFAULT NULL,
+  `unidadId` smallint(6) DEFAULT NULL,
+  `desActInt` mediumtext DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `metensunpa`
+--
+
+CREATE TABLE `metensunpa` (
+  `metEnUPAId` smallint(6) NOT NULL,
+  `planAcId` smallint(6) DEFAULT NULL,
+  `unidadId` smallint(6) DEFAULT NULL,
+  `desActividad` mediumtext DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1115,6 +1259,20 @@ CREATE TABLE `recuextraplanac` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `recymatpa`
+--
+
+CREATE TABLE `recymatpa` (
+  `rymPAId` smallint(6) NOT NULL,
+  `planAcId` smallint(6) DEFAULT NULL,
+  `unidadId` smallint(6) DEFAULT NULL,
+  `matDId` smallint(6) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `segplanclase`
 --
 
@@ -1349,6 +1507,24 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `anexospa`
+--
+DROP TABLE IF EXISTS `anexospa`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `anexospa`  AS  select `p`.`planAcId` AS `cvePlanAcad`,`d`.`dctoName` AS `nombreAnexo`,`d`.`dctoUrl` AS `ubicacion`,`td`.`tdName` AS `tipoAnexo` from (((`planeacionacademica` `p` join `anexosplanaca` `a` on(`a`.`planAcId` = `p`.`planAcId`)) join `documentos` `d` on(`d`.`dctoId` = `a`.`dctoId`)) join `tipodocumento` `td` on(`td`.`tdocId` = `d`.`tdocId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `bibliopa`
+--
+DROP TABLE IF EXISTS `bibliopa`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `bibliopa`  AS  select `p`.`planAcId` AS `cvePlanAcad`,`f`.`fuenteName` AS `tituloFuente`,`f`.`fuenteAutor` AS `autor_es`,`f`.`fuenteCiudad` AS `ciudad`,`f`.`fuentePais` AS `pais`,`f`.`fuenteEditorial` AS `editorial`,`f`.`fuenteAnio` AS `anio` from ((`planeacionacademica` `p` join `biblioplanaca` `bp` on(`bp`.`planAcId` = `p`.`planAcId`)) join `fuentebiblio` `f` on(`bp`.`fuenteId` = `f`.`fuenteId`)) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `foraca03a_r0_encuadre`
 --
 DROP TABLE IF EXISTS `foraca03a_r0_encuadre`;
@@ -1376,11 +1552,38 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `listainsupa`
+--
+DROP TABLE IF EXISTS `listainsupa`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `listainsupa`  AS  select `pa`.`planAcId` AS `cvePlanAcad`,`u`.`unidadId` AS `cveUnidad`,`u`.`unidadName` AS `unidadNombre`,`ins`.`instName` AS `instrumento`,`ins`.`instDesc` AS `instrumentoDesc`,`ins`.`instCompe` AS `competencia`,`i`.`instEvPAPor` AS `porcentaje` from (((`planeacionacademica` `pa` join `instevpa` `i` on(`pa`.`planAcId` = `i`.`planAcId`)) join `insteval` `ins` on(`ins`.`instId` = `i`.`instId`)) join `unidades` `u` on(`i`.`unidadId` = `u`.`unidadId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `listamateupa`
+--
+DROP TABLE IF EXISTS `listamateupa`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `listamateupa`  AS  select `pa`.`planAcId` AS `cvePlanAcad`,`u`.`unidadId` AS `cveUnidad`,`u`.`unidadName` AS `unidadNombre`,`mat`.`matDName` AS `material`,`mat`.`matDDesc` AS `materialDesc` from (((`planeacionacademica` `pa` join `recymatpa` `rm` on(`pa`.`planAcId` = `rm`.`planAcId`)) join `unidades` `u` on(`rm`.`unidadId` = `u`.`unidadId`)) join `matdidactico` `mat` on(`mat`.`matDId` = `rm`.`matDId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `listameteupa`
+--
+DROP TABLE IF EXISTS `listameteupa`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `listameteupa`  AS  select `pa`.`planAcId` AS `cvePlanAcad`,`u`.`unidadId` AS `cveUnidad`,`u`.`unidadName` AS `unidadNombre`,`met`.`metEnsName` AS `metodoEnseñanza`,`met`.`metEnsDesc` AS `metodoEnseDesc` from ((((`planeacionacademica` `pa` join `metensunpa` `mu` on(`pa`.`planAcId` = `mu`.`planAcId`)) join `unidades` `u` on(`mu`.`unidadId` = `u`.`unidadId`)) join `detmetensunpa` `dmu` on(`dmu`.`metEnUPAId` = `mu`.`metEnUPAId`)) join `metenseñanza` `met` on(`met`.`metEnsId` = `dmu`.`metEnsId`)) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `materiabibliografia`
 --
 DROP TABLE IF EXISTS `materiabibliografia`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiabibliografia`  AS  select `m`.`cveMateria` AS `cveMateria`,`b`.`tipoBiblio` AS `tipoBibliografia`,`fb`.`fuenteName` AS `nombreFuente`,`fb`.`fuenteDesc` AS `descripcion`,`fb`.`fuenteAutor` AS `autor_es`,`fb`.`fuenteCiudad` AS `ciudad`,`fb`.`fuentePais` AS `pais`,`fb`.`fuenteEditorial` AS `Editorial`,`fb`.`fuenteTipo` AS `tipoFuente` from (((`materias` `m` join `hojaasignatura` `h` on(`m`.`hojaAsId` = `h`.`hojaAsId`)) join `bibliografias` `b` on(`h`.`hojaAsId` = `b`.`hojaAsId`)) join `fuentebiblio` `fb` on(`b`.`biblioId` = `fb`.`biblioId`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiabibliografia`  AS  select `m`.`cveMateria` AS `cveMateria`,`b`.`tipoBiblio` AS `tipoBibliografia`,`fb`.`fuenteId` AS `fuenteId`,`fb`.`fuenteName` AS `nombreFuente`,`fb`.`fuenteDesc` AS `descripcion`,`fb`.`fuenteAutor` AS `autor_es`,`fb`.`fuenteCiudad` AS `ciudad`,`fb`.`fuentePais` AS `pais`,`fb`.`fuenteEditorial` AS `Editorial`,`fb`.`fuenteTipo` AS `tipoFuente` from (((`materias` `m` join `hojaasignatura` `h` on(`m`.`hojaAsId` = `h`.`hojaAsId`)) join `bibliografias` `b` on(`h`.`hojaAsId` = `b`.`hojaAsId`)) join `fuentebiblio` `fb` on(`b`.`biblioId` = `fb`.`biblioId`)) ;
 
 -- --------------------------------------------------------
 
@@ -1526,6 +1729,13 @@ ALTER TABLE `alumnos`
   ADD KEY `personId` (`personId`);
 
 --
+-- Indices de la tabla `anexosplanaca`
+--
+ALTER TABLE `anexosplanaca`
+  ADD PRIMARY KEY (`anePAId`),
+  ADD KEY `planAcId` (`planAcId`);
+
+--
 -- Indices de la tabla `areaadscripcion`
 --
 ALTER TABLE `areaadscripcion`
@@ -1566,6 +1776,13 @@ ALTER TABLE `biblioevpa`
 ALTER TABLE `bibliografias`
   ADD PRIMARY KEY (`biblioId`),
   ADD KEY `hojaAsId` (`hojaAsId`);
+
+--
+-- Indices de la tabla `biblioplanaca`
+--
+ALTER TABLE `biblioplanaca`
+  ADD PRIMARY KEY (`biblioPAId`),
+  ADD KEY `planAcId` (`planAcId`);
 
 --
 -- Indices de la tabla `capacidades`
@@ -1622,6 +1839,12 @@ ALTER TABLE `departamentos`
 ALTER TABLE `dethoragpo`
   ADD PRIMARY KEY (`detHoraGpo`),
   ADD KEY `horaGpoId` (`horaGpoId`);
+
+--
+-- Indices de la tabla `detmetensunpa`
+--
+ALTER TABLE `detmetensunpa`
+  ADD PRIMARY KEY (`detMEUPAId`);
 
 --
 -- Indices de la tabla `detmetunipa`
@@ -1716,8 +1939,7 @@ ALTER TABLE `estaprepc`
 -- Indices de la tabla `evalpa`
 --
 ALTER TABLE `evalpa`
-  ADD PRIMARY KEY (`evalPAId`),
-  ADD KEY `dPAcaId` (`dPAcaId`);
+  ADD PRIMARY KEY (`evalPAId`);
 
 --
 -- Indices de la tabla `evalpc`
@@ -1782,8 +2004,7 @@ ALTER TABLE `instevalpc`
 -- Indices de la tabla `instevpa`
 --
 ALTER TABLE `instevpa`
-  ADD PRIMARY KEY (`instEvPAId`),
-  ADD KEY `evalPAId` (`evalPAId`);
+  ADD PRIMARY KEY (`instEvPAId`);
 
 --
 -- Indices de la tabla `instunidad`
@@ -1831,6 +2052,18 @@ ALTER TABLE `matunidad`
 --
 ALTER TABLE `metenseñanza`
   ADD PRIMARY KEY (`metEnsId`);
+
+--
+-- Indices de la tabla `metensinpa`
+--
+ALTER TABLE `metensinpa`
+  ADD PRIMARY KEY (`metEnInPAId`);
+
+--
+-- Indices de la tabla `metensunpa`
+--
+ALTER TABLE `metensunpa`
+  ADD PRIMARY KEY (`metEnUPAId`);
 
 --
 -- Indices de la tabla `metunidad`
@@ -1894,6 +2127,12 @@ ALTER TABLE `puestos`
 --
 ALTER TABLE `recuextraplanac`
   ADD PRIMARY KEY (`rePAId`);
+
+--
+-- Indices de la tabla `recymatpa`
+--
+ALTER TABLE `recymatpa`
+  ADD PRIMARY KEY (`rymPAId`);
 
 --
 -- Indices de la tabla `segplanclase`
@@ -1970,6 +2209,12 @@ ALTER TABLE `unidades`
 --
 ALTER TABLE `academias`
   MODIFY `academiaId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `anexosplanaca`
+--
+ALTER TABLE `anexosplanaca`
+  MODIFY `anePAId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `areaadscripcion`
@@ -2054,6 +2299,12 @@ ALTER TABLE `departamentos`
 --
 ALTER TABLE `dethoragpo`
   MODIFY `detHoraGpo` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `detmetensunpa`
+--
+ALTER TABLE `detmetensunpa`
+  MODIFY `detMEUPAId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `detmetunipa`
@@ -2236,6 +2487,18 @@ ALTER TABLE `metenseñanza`
   MODIFY `metEnsId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `metensinpa`
+--
+ALTER TABLE `metensinpa`
+  MODIFY `metEnInPAId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `metensunpa`
+--
+ALTER TABLE `metensunpa`
+  MODIFY `metEnUPAId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `metunidad`
 --
 ALTER TABLE `metunidad`
@@ -2294,6 +2557,12 @@ ALTER TABLE `puestos`
 --
 ALTER TABLE `recuextraplanac`
   MODIFY `rePAId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `recymatpa`
+--
+ALTER TABLE `recymatpa`
+  MODIFY `rymPAId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `segplanclase`
@@ -2366,6 +2635,12 @@ ALTER TABLE `alumnos`
   ADD CONSTRAINT `alumnos_ibfk_1` FOREIGN KEY (`personId`) REFERENCES `personas` (`personId`);
 
 --
+-- Filtros para la tabla `anexosplanaca`
+--
+ALTER TABLE `anexosplanaca`
+  ADD CONSTRAINT `anexosplanaca_ibfk_1` FOREIGN KEY (`planAcId`) REFERENCES `planeacionacademica` (`planAcId`);
+
+--
 -- Filtros para la tabla `areaadscripcion`
 --
 ALTER TABLE `areaadscripcion`
@@ -2395,6 +2670,12 @@ ALTER TABLE `biblioevpa`
 --
 ALTER TABLE `bibliografias`
   ADD CONSTRAINT `bibliografias_ibfk_1` FOREIGN KEY (`hojaAsId`) REFERENCES `hojaasignatura` (`hojaAsId`);
+
+--
+-- Filtros para la tabla `biblioplanaca`
+--
+ALTER TABLE `biblioplanaca`
+  ADD CONSTRAINT `biblioplanaca_ibfk_1` FOREIGN KEY (`planAcId`) REFERENCES `planeacionacademica` (`planAcId`);
 
 --
 -- Filtros para la tabla `capunidades`
@@ -2507,12 +2788,6 @@ ALTER TABLE `estaprepc`
   ADD CONSTRAINT `estaprepc_ibfk_1` FOREIGN KEY (`detPCId`) REFERENCES `detplanclase` (`detPCId`);
 
 --
--- Filtros para la tabla `evalpa`
---
-ALTER TABLE `evalpa`
-  ADD CONSTRAINT `evalpa_ibfk_1` FOREIGN KEY (`dPAcaId`) REFERENCES `detplanaca` (`dPAcaId`);
-
---
 -- Filtros para la tabla `evalpc`
 --
 ALTER TABLE `evalpc`
@@ -2546,7 +2821,7 @@ ALTER TABLE `instevalpc`
 -- Filtros para la tabla `instevpa`
 --
 ALTER TABLE `instevpa`
-  ADD CONSTRAINT `instevpa_ibfk_1` FOREIGN KEY (`evalPAId`) REFERENCES `evalpa` (`evalPAId`);
+  ADD CONSTRAINT `instevpa_ibfk_1` FOREIGN KEY (`planAcId`) REFERENCES `evalpa` (`evalPAId`);
 
 --
 -- Filtros para la tabla `instunidad`
