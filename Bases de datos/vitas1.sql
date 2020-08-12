@@ -19,12 +19,12 @@ create view trabajadoresDatosGrales AS
 
 create view personaTelefonos as
 	select p.personId as cvePersona,
-		personName as Nombre,
-		personLn1 as Apellido_Pat, 
-		personLn2 as Apellido_Mat,
-		telNum as Telefono,
-		telTipo as tipoTelefono,
-		telExt as Extencion
+		p.personName as Nombre,
+		p.personLn1 as Apellido_Pat, 
+		p.personLn2 as Apellido_Mat,
+		t.telNum as Telefono,
+		t.telTipo as tipoTelefono,
+		t.telExt as Extencion
 		from personas p
 		inner join telefonos t on p.personId = t.personId
 
@@ -60,7 +60,6 @@ create table tipoFamiliares(
  	createdAt datetime default CURRENT_TIMESTAMP
 );
 
-
 create table personasfamiliares(
 	familiarId smallint auto_increment primary key,
 	famId smallint,
@@ -70,9 +69,9 @@ create table personasfamiliares(
 );
 
 select * from personas p 
-inner join personasfamiliares pf on p.personId = pf.numPersona
-inner join personas ppf on pf.famId = ppf.personId
-inner join tipoFamiliar tf on tf.tipoFamId = pf.tipoFamiliar
+	inner join personasfamiliares pf on p.personId = pf.numPersona
+	inner join personas ppf on pf.famId = ppf.personId
+	inner join tipoFamiliar tf on tf.tipoFamId = pf.tipoFamiliar
 
 create view personaFamiliares as
 	select p.personId as cvePersona,
@@ -83,8 +82,8 @@ create view personaFamiliares as
 		tFamName as tipoFamiliar
 		from personas p 
 		inner join personasfamiliares pf on p.personId = pf.numPersona
-inner join personas ppf on pf.famId = ppf.personId
-inner join tipoFamiliares tf on tf.tipoFamId = pf.tipoFamiliar
+		inner join personas ppf on pf.famId = ppf.personId
+		inner join tipoFamiliares tf on tf.tipoFamId = pf.tipoFamiliar
 
 create view alumnosListado as
 	select p.personId As cvePersona, 
@@ -127,29 +126,29 @@ FROM alumnosListado al
 /* buscar numeros de telefono familiar en especifico */
 
 SELECT pf.cvePersona,
-pf.cveFamiliar,
-Concat(pf.nombreFamiliar," ",pf.apePatFamiliar," ", pf.apeMatFamiliar) as Familiar, 
-pf.tipoFamiliar, 
-pt.Telefono,
-pt.tipoTelefono,
-pt.Extencion,
-pm.email,
-pm.tipoMail
-FROM alumnosListado al 
-	inner join personaFamiliares pf on al.cvePersona = pf.cvePersona 
-	inner join personatelefonos pt on pf.cvePersona = pt.cvePersona
+	pf.cveFamiliar,
+	Concat(pf.nombreFamiliar," ",pf.apePatFamiliar," ", pf.apeMatFamiliar) as Familiar, 
+	pf.tipoFamiliar, 
+	pt.Telefono,
+	pt.tipoTelefono,
+	pt.Extencion,
+	pm.email,
+	pm.tipoMail
+	FROM alumnosListado al 
+		inner join personaFamiliares pf on al.cvePersona = pf.cvePersona 
+		inner join personatelefonos pt on pf.cvePersona = pt.cvePersona
 
 
 /* buscar mails familiar en especifico */
 
 SELECT pf.cvePersona,
-pf.cveFamiliar,
-Concat(pf.nombreFamiliar," ",pf.apePatFamiliar," ", pf.apeMatFamiliar) as Familiar, 
-pf.tipoFamiliar, 
-pm.email,
-pm.tipoMail
-FROM alumnosListado al 
-	inner join personaFamiliares pf on al.cvePersona = pf.cvePersona 
+	pf.cveFamiliar,
+	Concat(pf.nombreFamiliar," ",pf.apePatFamiliar," ", pf.apeMatFamiliar) as Familiar, 
+	pf.tipoFamiliar, 
+	pm.email,
+	pm.tipoMail
+	FROM alumnosListado al 
+		inner join personaFamiliares pf on al.cvePersona = pf.cvePersona 
 	inner join personamails pm on pf.cvePersona = pm.cvePersona
 
 /* 05/08/2020 parte 2*/
@@ -173,10 +172,12 @@ CREATE VIEW materiasUnidades As
 	select cveMateria,
 	unidadId as cveUnidad,unidadName as unidad, concat("Unidad ",unidadNum) as numeroUnidad,
 	unidadObj as objetivoUnidad, hrsTUnidad as horasTeoría,
-	hrsPUnidad as horasPractica, resultAp as resultadoAprendizaje, secAp as secuenciaAprendizaje
+	hrsPUnidad as horasPractica, resultAp as resultadoAprendizaje, secAp as secuenciaAprendizaje,capDesc as capacidad
 	from materias m 
 	inner join hojaAsignatura h on m.hojaAsId = h.hojaAsId
 	inner join unidades u on u.hojaAsId = h.hojaAsId
+	inner join capUnidades cu on cu.unidadId = u.unidadId
+	inner join capacidades ca on cu.capId = ca.capId
 
 CREATE VIEW unidadesCapacidades As
 	select u.unidadId as cveUnidad, 
@@ -373,8 +374,13 @@ create view FORACA03A_r0_secDidactica as
 	concat("Unidad ",u.unidadNum) as numeroUnidad,
 	u.unidadName as unidad,
 	u.secAp as secuenciaAprendizaje,
-	u.resultAp as resultadoAprendizaje
-	ut.Tema,ut.saberTema as conceptual, ut.SerTema as procedimental, ut.saberSerTema as actitudinal
+	u.resultAp as resultadoAprendizaje,
+	ut.Tema,ut.saberTema as conceptual, ut.SerTema as procedimental, ut.sabSerTema as actitudinal
+	from planeacionacademica pa 
+	inner join detplanaca dp on dp.planAcId = pa.planAcId
+	inner join unidades u on dp.unidadId = u.unidadId
+	inner join unidadesTemas ut on ut.cveUnidad = u.unidadId
+
 
 /*generar otra consulta para obtener el listado de estrategias de Enseñanza aprendizaje por unidad*/
 create view listaMetEUPA as
@@ -468,4 +474,104 @@ create view anexosPA as
 		from planeacionacademica p
 		inner join anexosPlanAca a on a.planAcId = p.planAcId
 		inner join documentos d on d.dctoId = a.dctoId
-		inner join tipoDocumento td on td.tdocId = d.tdocI
+		inner join tipoDocumento td on td.tdocId = d.tdoc
+
+/*11/08/2020_TARDE*/
+
+/*Generar una vista para directores de carreras*/
+create view directoresCarreras as
+	select dir.cvePersona,
+	c.carreraId as cveCarrera,
+	concat(dir.Nombre," ",dir.Apellido_Pat," ",dir.Apellido_Pat) as director,
+	c.carreraName as carrera, c.carreraEsp as area
+	from directoresCarrera dc 
+	inner join carreras c on c.directorId =dc.directorId
+	inner join trabajadoresdatosgrales dir on dc.cveTrabajador = dir.numeroTrabajador
+
+/*12/08/2020 */
+
+
+/*Generar una vista para el formato FOR-ACA-03-B_r0 correspondiente al Plan de Clase del Docente*/
+create view FORACA03B_r0_gral as
+	select pc.planClaseId as cvePlanClase,
+	pc.planClaseName as nombrePlanClase,
+	pc.feElabPC as fechaElaboracion, 
+	pc.feAutPC as fechaAutorizacion,
+	dc.director, 
+	ac.academiaId as cveAcademia,
+	ac.academiaName as academia,
+	dep.deptoName as departamento,
+	tut.cveTrabajador as cveTutor,
+	concat(tut.nombreTutor," ",tut.apellidoPatTutor," ",tut.apellidoMatTutor) as Tutor,
+	g.cveGpo as grupo,
+	md.cveMateria, 
+	md.materia as asignatura,
+	concat(md.nombreDocente," ",md.apellidoPat," ",md.apellidoMat) as docente,
+	md.periodo, md.carrera, md.area,
+	cmp.competencia, cmp.descripcion as descripcionCompetencia,
+	cmp.tipoCompetencia,
+	mu.capacidad
+	from planclase pc
+	inner join directoresCarreras dc on pc.directorId = dc.cvePersona
+	inner join materiasDocentes md on pc.cveMateria = md.cveMateria
+	inner join materiacompetencias cmp on pc.cveMateria = cmp.cveMateria
+	inner join materiasUnidades mu on pc.cveMateria = mu.cveMateria
+	inner join academias ac on pc.academiaId = ac.academiaId
+	inner join grupos g on g.grupoId = pc.grupoId
+	inner join tutoresGrupo tut on tut.Grupo = g.cveGpo
+	inner join departamentos dep on pc.deptoId = dep.deptoId
+
+/*generar tabla para docentes y academias*/
+create table personasAcademias(
+	perAcaId smallint primary key auto_increment,
+	personaId smallint,
+	academiaId smallint,
+	createdAt datetime default CURRENT_TIMESTAMP
+);
+
+/*generar una vista para saber las personas que pertenecen a la academia*/
+create view academiaMiembros as 
+	select a.academiaId as cveAcademia, a.academiaName as academia, 
+	pt.cvePersona, 
+	concat(pt.Nombre," ",pt.Apellido_Pat," ",pt.Apellido_Mat) as nombreCompleto, 
+	pt.Email_Institucional as Email_InstitucionalPte 
+	from academias a 
+	inner join personasacademias pa on a.academiaId = pa.academiaId
+	inner join trabajadoresDatosGrales pt on pa.personaId = pt.cvePersona
+
+/*generar una vista para cada presidente de academia y la academia a la que pertenece*/
+create view academiaPresidente as 
+	select a.academiaId as cveAcademia, a.academiaName as academia, 
+	pt.cvePersona as cvePresidente, 
+	concat(pt.Nombre," ",pt.Apellido_Pat," ",pt.Apellido_Mat) as presidente, 
+	pt.Email_Institucional as Email_InstitucionalPte, 
+	sc.cvePersona as cveSecretario, 
+	concat(sc.Nombre," ",sc.Apellido_Pat," ",sc.Apellido_Mat) as secretario, 
+	sc.Email_Institucional 
+	from academias a 
+	inner join trabajadoresdatosgrales pt on a.presidenteAc = pt.cvePersona 
+	inner join trabajadoresdatosgrales sc on a.secretarioAc = sc.cvePersona
+
+/*generar detalle por unidad de cada FOR-ACA-03-B_r0*/
+create view FORACA03B_r0_evalUnidades as
+	select pc.cvePlanClase,
+	mu.cveUnidad, mu.numeroUnidad, mu.unidad,
+	mu.resultadoAprendizaje, mu.secuenciaAprendizaje,
+	te.Tema,dpc.detPCSesion as sesion,dpc.detPCfechaImp as fechaTema,
+	te.saberTema,te.SerTema,te.sabSerTema,
+	i.instName as instrumento,ins.instEvPCPorc as instrumentoPorcentaje,
+	ins.instEvPCDesc as instrumDescripcion,
+	evid.evidPCName as evidencia,
+	evid.evidPCDesc as evidenciaDescripcion,
+	dpc.detPCObs as observaciones
+	from FORACA03B_r0_gral pc
+	inner join materiasunidades mu on pc.cveMateria = mu.cveMateria
+	inner join unidadesTemas te on mu.cveUnidad =te.cveUnidad
+	inner join detplanClase dpc on dpc.planClaseId = pc.cvePlanClase
+	inner join evidPc evid on evid.detPCId = dpc.detPCId
+	inner join instevalpc ins on ins.detPCId = dpc.detPCId
+	inner join insteval i on i.instId = ins.instId
+
+
+
+

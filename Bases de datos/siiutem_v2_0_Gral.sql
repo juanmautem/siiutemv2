@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-08-2020 a las 22:09:16
+-- Tiempo de generación: 12-08-2020 a las 19:32:26
 -- Versión del servidor: 10.4.13-MariaDB
 -- Versión de PHP: 7.2.31
 
@@ -20,6 +20,37 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `siiutemv2.0_gral`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `academiamiembros`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `academiamiembros` (
+`cveAcademia` smallint(6)
+,`academia` varchar(30)
+,`cvePersona` smallint(6)
+,`nombreCompleto` varchar(122)
+,`Email_InstitucionalPte` varchar(100)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `academiapresidente`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `academiapresidente` (
+`cveAcademia` smallint(6)
+,`academia` varchar(30)
+,`cvePresidente` smallint(6)
+,`presidente` varchar(122)
+,`Email_InstitucionalPte` varchar(100)
+,`cveSecretario` smallint(6)
+,`secretario` varchar(122)
+,`Email_Institucional` varchar(100)
+);
 
 -- --------------------------------------------------------
 
@@ -415,6 +446,20 @@ CREATE TABLE `directorescarrera` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `directorescarreras`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `directorescarreras` (
+`cvePersona` smallint(6)
+,`cveCarrera` smallint(6)
+,`director` varchar(122)
+,`carrera` varchar(40)
+,`area` varchar(40)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `docepaanexos`
 --
 
@@ -600,6 +645,82 @@ CREATE TABLE `foraca03a_r0_gral` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `foraca03a_r0_secdidactica`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `foraca03a_r0_secdidactica` (
+`cvePlanAcad` smallint(6)
+,`cveUnidad` smallint(6)
+,`numeroUnidad` varchar(11)
+,`unidad` varchar(30)
+,`secuenciaAprendizaje` text
+,`resultadoAprendizaje` mediumtext
+,`Tema` varchar(30)
+,`conceptual` mediumtext
+,`procedimental` mediumtext
+,`actitudinal` mediumtext
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `foraca03b_r0_evaltemas`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `foraca03b_r0_evaltemas` (
+`cvePlanClase` smallint(6)
+,`cveUnidad` smallint(6)
+,`numeroUnidad` varchar(11)
+,`unidad` varchar(30)
+,`resultadoAprendizaje` mediumtext
+,`secuenciaAprendizaje` text
+,`Tema` varchar(30)
+,`sesion` smallint(6)
+,`fechaTema` date
+,`saberTema` mediumtext
+,`SerTema` mediumtext
+,`sabSerTema` mediumtext
+,`instrumento` varchar(30)
+,`instrumentoPorcentaje` tinyint(4)
+,`instrumDescripcion` mediumtext
+,`evidencia` varchar(30)
+,`evidenciaDescripcion` mediumtext
+,`observaciones` mediumtext
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `foraca03b_r0_gral`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `foraca03b_r0_gral` (
+`cvePlanClase` smallint(6)
+,`nombrePlanClase` varchar(30)
+,`fechaElaboracion` date
+,`fechaAutorizacion` date
+,`director` varchar(122)
+,`cveAcademia` smallint(6)
+,`academia` varchar(30)
+,`departamento` varchar(30)
+,`cveTutor` smallint(6)
+,`Tutor` varchar(122)
+,`grupo` varchar(10)
+,`cveMateria` varchar(10)
+,`asignatura` varchar(50)
+,`docente` varchar(122)
+,`periodo` varchar(27)
+,`carrera` varchar(40)
+,`area` varchar(40)
+,`competencia` varchar(30)
+,`descripcionCompetencia` varchar(200)
+,`tipoCompetencia` varchar(30)
+,`capacidad` mediumtext
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `fotografias`
 --
 
@@ -731,6 +852,7 @@ CREATE TABLE `instevalpc` (
   `instId` smallint(6) DEFAULT NULL,
   `detPCId` smallint(6) DEFAULT NULL,
   `instEvPCPorc` tinyint(4) DEFAULT NULL,
+  `instEvPCDesc` mediumtext NOT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -746,6 +868,7 @@ CREATE TABLE `instevpa` (
   `unidadId` smallint(6) NOT NULL,
   `instId` smallint(6) DEFAULT NULL,
   `instEvPAPor` tinyint(4) DEFAULT NULL,
+  `instEvPADesc` mediumtext NOT NULL COMMENT 'Sirve par aponer la descipción de como se implementará el instrumento',
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -944,14 +1067,15 @@ CREATE TABLE `materiasinfo` (
 --
 CREATE TABLE `materiasunidades` (
 `cveMateria` varchar(10)
-,`numeroUnidad` varchar(11)
 ,`cveUnidad` smallint(6)
 ,`unidad` varchar(30)
+,`numeroUnidad` varchar(11)
 ,`objetivoUnidad` varchar(200)
 ,`horasTeoría` smallint(6)
 ,`horasPractica` smallint(6)
 ,`resultadoAprendizaje` mediumtext
 ,`secuenciaAprendizaje` text
+,`capacidad` mediumtext
 );
 
 -- --------------------------------------------------------
@@ -1137,6 +1261,19 @@ CREATE TABLE `personas` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `personasacademias`
+--
+
+CREATE TABLE `personasacademias` (
+  `perAcaId` smallint(6) NOT NULL,
+  `personaId` smallint(6) DEFAULT NULL,
+  `academiaId` smallint(6) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `personasfamiliares`
 --
 
@@ -1174,7 +1311,7 @@ CREATE TABLE `planclase` (
   `planClaseName` varchar(30) NOT NULL,
   `planClaseDesc` varchar(200) DEFAULT NULL,
   `cveTrabajador` smallint(6) DEFAULT NULL,
-  `materiaId` smallint(6) DEFAULT NULL,
+  `cveMateria` varchar(10) DEFAULT NULL,
   `deptoId` smallint(6) DEFAULT NULL,
   `academiaId` smallint(6) DEFAULT NULL,
   `grupoId` smallint(6) DEFAULT NULL,
@@ -1484,16 +1621,46 @@ CREATE TABLE `unidades` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `unidadescapacidades`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `unidadescapacidades` (
+`cveUnidad` smallint(6)
+,`capacidad` mediumtext
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura Stand-in para la vista `unidadestemas`
 -- (Véase abajo para la vista actual)
 --
 CREATE TABLE `unidadestemas` (
 `cveUnidad` smallint(6)
+,`cveTema` smallint(6)
 ,`Tema` varchar(30)
 ,`saberTema` mediumtext
 ,`SerTema` mediumtext
 ,`sabSerTema` mediumtext
 );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `academiamiembros`
+--
+DROP TABLE IF EXISTS `academiamiembros`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `academiamiembros`  AS  select `a`.`academiaId` AS `cveAcademia`,`a`.`academiaName` AS `academia`,`pt`.`cvePersona` AS `cvePersona`,concat(`pt`.`Nombre`,' ',`pt`.`Apellido_Pat`,' ',`pt`.`Apellido_Mat`) AS `nombreCompleto`,`pt`.`Email_Institucional` AS `Email_InstitucionalPte` from ((`academias` `a` join `personasacademias` `pa` on(`a`.`academiaId` = `pa`.`academiaId`)) join `trabajadoresdatosgrales` `pt` on(`pa`.`personaId` = `pt`.`cvePersona`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `academiapresidente`
+--
+DROP TABLE IF EXISTS `academiapresidente`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `academiapresidente`  AS  select `a`.`academiaId` AS `cveAcademia`,`a`.`academiaName` AS `academia`,`pt`.`cvePersona` AS `cvePresidente`,concat(`pt`.`Nombre`,' ',`pt`.`Apellido_Pat`,' ',`pt`.`Apellido_Mat`) AS `presidente`,`pt`.`Email_Institucional` AS `Email_InstitucionalPte`,`sc`.`cvePersona` AS `cveSecretario`,concat(`sc`.`Nombre`,' ',`sc`.`Apellido_Pat`,' ',`sc`.`Apellido_Mat`) AS `secretario`,`sc`.`Email_Institucional` AS `Email_Institucional` from ((`academias` `a` join `trabajadoresdatosgrales` `pt` on(`a`.`presidenteAc` = `pt`.`cvePersona`)) join `trabajadoresdatosgrales` `sc` on(`a`.`secretarioAc` = `sc`.`cvePersona`)) ;
 
 -- --------------------------------------------------------
 
@@ -1525,6 +1692,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `directorescarreras`
+--
+DROP TABLE IF EXISTS `directorescarreras`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `directorescarreras`  AS  select `dir`.`cvePersona` AS `cvePersona`,`c`.`carreraId` AS `cveCarrera`,concat(`dir`.`Nombre`,' ',`dir`.`Apellido_Pat`,' ',`dir`.`Apellido_Pat`) AS `director`,`c`.`carreraName` AS `carrera`,`c`.`carreraEsp` AS `area` from ((`directorescarrera` `dc` join `carreras` `c` on(`c`.`directorId` = `dc`.`directorId`)) join `trabajadoresdatosgrales` `dir` on(`dc`.`cveTrabajador` = `dir`.`numeroTrabajador`)) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `foraca03a_r0_encuadre`
 --
 DROP TABLE IF EXISTS `foraca03a_r0_encuadre`;
@@ -1539,6 +1715,33 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 DROP TABLE IF EXISTS `foraca03a_r0_gral`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `foraca03a_r0_gral`  AS  select `pa`.`planAcId` AS `cvePlanAcad`,`pa`.`planAcName` AS `nombrePlan`,`pa`.`planAcDesc` AS `descripcionPA`,`dpto`.`deptoName` AS `departamento`,`ac`.`academiaName` AS `academiaName`,`m`.`materiaId` AS `cveMateria`,`m`.`materiaName` AS `materia`,`pa`.`feElabPA` AS `fechaElaboracion`,`pa`.`feAutPA` AS `fechaAutorizacion`,`pa`.`statusPAc` AS `estado`,`tc`.`tCursoName` AS `tipoCurso` from ((((`planeacionacademica` `pa` join `materias` `m` on(`pa`.`materiaId` = `m`.`materiaId`)) join `academias` `ac` on(`pa`.`academiaId` = `ac`.`academiaId`)) join `departamentos` `dpto` on(`pa`.`deptoId` = `dpto`.`deptoId`)) join `tipocurso` `tc` on(`pa`.`tCursoId` = `tc`.`tCursoId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `foraca03a_r0_secdidactica`
+--
+DROP TABLE IF EXISTS `foraca03a_r0_secdidactica`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `foraca03a_r0_secdidactica`  AS  select `pa`.`planAcId` AS `cvePlanAcad`,`u`.`unidadId` AS `cveUnidad`,concat('Unidad ',`u`.`unidadNum`) AS `numeroUnidad`,`u`.`unidadName` AS `unidad`,`u`.`secAp` AS `secuenciaAprendizaje`,`u`.`resultAp` AS `resultadoAprendizaje`,`ut`.`Tema` AS `Tema`,`ut`.`saberTema` AS `conceptual`,`ut`.`SerTema` AS `procedimental`,`ut`.`sabSerTema` AS `actitudinal` from (((`planeacionacademica` `pa` join `detplanaca` `dp` on(`dp`.`planAcId` = `pa`.`planAcId`)) join `unidades` `u` on(`dp`.`unidadId` = `u`.`unidadId`)) join `unidadestemas` `ut` on(`ut`.`cveUnidad` = `u`.`unidadId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `foraca03b_r0_evaltemas`
+--
+DROP TABLE IF EXISTS `foraca03b_r0_evaltemas`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `foraca03b_r0_evaltemas`  AS  select `pc`.`cvePlanClase` AS `cvePlanClase`,`mu`.`cveUnidad` AS `cveUnidad`,`mu`.`numeroUnidad` AS `numeroUnidad`,`mu`.`unidad` AS `unidad`,`mu`.`resultadoAprendizaje` AS `resultadoAprendizaje`,`mu`.`secuenciaAprendizaje` AS `secuenciaAprendizaje`,`te`.`Tema` AS `Tema`,`dpc`.`detPCSesion` AS `sesion`,`dpc`.`detPCfechaImp` AS `fechaTema`,`te`.`saberTema` AS `saberTema`,`te`.`SerTema` AS `SerTema`,`te`.`sabSerTema` AS `sabSerTema`,`i`.`instName` AS `instrumento`,`ins`.`instEvPCPorc` AS `instrumentoPorcentaje`,`ins`.`instEvPCDesc` AS `instrumDescripcion`,`evid`.`evidPCName` AS `evidencia`,`evid`.`evidPCDesc` AS `evidenciaDescripcion`,`dpc`.`detPCObs` AS `observaciones` from ((((((`foraca03b_r0_gral` `pc` join `materiasunidades` `mu` on(`pc`.`cveMateria` = `mu`.`cveMateria`)) join `unidadestemas` `te` on(`mu`.`cveUnidad` = `te`.`cveUnidad`)) join `detplanclase` `dpc` on(`dpc`.`planClaseId` = `pc`.`cvePlanClase`)) join `evidpc` `evid` on(`evid`.`detPCId` = `dpc`.`detPCId`)) join `instevalpc` `ins` on(`ins`.`detPCId` = `dpc`.`detPCId`)) join `insteval` `i` on(`i`.`instId` = `ins`.`instId`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `foraca03b_r0_gral`
+--
+DROP TABLE IF EXISTS `foraca03b_r0_gral`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `foraca03b_r0_gral`  AS  select `pc`.`planClaseId` AS `cvePlanClase`,`pc`.`planClaseName` AS `nombrePlanClase`,`pc`.`feElabPC` AS `fechaElaboracion`,`pc`.`feAutPC` AS `fechaAutorizacion`,`dc`.`director` AS `director`,`ac`.`academiaId` AS `cveAcademia`,`ac`.`academiaName` AS `academia`,`dep`.`deptoName` AS `departamento`,`tut`.`cveTrabajador` AS `cveTutor`,concat(`tut`.`nombreTutor`,' ',`tut`.`apellidoPatTutor`,' ',`tut`.`apellidoMatTutor`) AS `Tutor`,`g`.`cveGpo` AS `grupo`,`md`.`cveMateria` AS `cveMateria`,`md`.`materia` AS `asignatura`,concat(`md`.`nombreDocente`,' ',`md`.`apellidoPat`,' ',`md`.`apellidoMat`) AS `docente`,`md`.`periodo` AS `periodo`,`md`.`carrera` AS `carrera`,`md`.`area` AS `area`,`cmp`.`competencia` AS `competencia`,`cmp`.`descripcion` AS `descripcionCompetencia`,`cmp`.`tipoCompetencia` AS `tipoCompetencia`,`mu`.`capacidad` AS `capacidad` from ((((((((`planclase` `pc` join `directorescarreras` `dc` on(`pc`.`directorId` = `dc`.`cvePersona`)) join `materiasdocentes` `md` on(`pc`.`cveMateria` = `md`.`cveMateria`)) join `materiacompetencias` `cmp` on(`pc`.`cveMateria` = `cmp`.`cveMateria`)) join `materiasunidades` `mu` on(`pc`.`cveMateria` = `mu`.`cveMateria`)) join `academias` `ac` on(`pc`.`academiaId` = `ac`.`academiaId`)) join `grupos` `g` on(`g`.`grupoId` = `pc`.`grupoId`)) join `tutoresgrupo` `tut` on(`tut`.`Grupo` = `g`.`cveGpo`)) join `departamentos` `dep` on(`pc`.`deptoId` = `dep`.`deptoId`)) ;
 
 -- --------------------------------------------------------
 
@@ -1619,7 +1822,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `materiasunidades`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiasunidades`  AS  select `m`.`cveMateria` AS `cveMateria`,concat('Unidad ',`u`.`unidadNum`) AS `numeroUnidad`,`u`.`unidadId` AS `cveUnidad`,`u`.`unidadName` AS `unidad`,`u`.`unidadObj` AS `objetivoUnidad`,`u`.`hrsTUnidad` AS `horasTeoría`,`u`.`hrsPUnidad` AS `horasPractica`,`u`.`resultAp` AS `resultadoAprendizaje`,`u`.`secAp` AS `secuenciaAprendizaje` from ((`materias` `m` join `hojaasignatura` `h` on(`m`.`hojaAsId` = `h`.`hojaAsId`)) join `unidades` `u` on(`u`.`hojaAsId` = `h`.`hojaAsId`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `materiasunidades`  AS  select `m`.`cveMateria` AS `cveMateria`,`u`.`unidadId` AS `cveUnidad`,`u`.`unidadName` AS `unidad`,concat('Unidad ',`u`.`unidadNum`) AS `numeroUnidad`,`u`.`unidadObj` AS `objetivoUnidad`,`u`.`hrsTUnidad` AS `horasTeoría`,`u`.`hrsPUnidad` AS `horasPractica`,`u`.`resultAp` AS `resultadoAprendizaje`,`u`.`secAp` AS `secuenciaAprendizaje`,`ca`.`capDesc` AS `capacidad` from ((((`materias` `m` join `hojaasignatura` `h` on(`m`.`hojaAsId` = `h`.`hojaAsId`)) join `unidades` `u` on(`u`.`hojaAsId` = `h`.`hojaAsId`)) join `capunidades` `cu` on(`cu`.`unidadId` = `u`.`unidadId`)) join `capacidades` `ca` on(`cu`.`capId` = `ca`.`capId`)) ;
 
 -- --------------------------------------------------------
 
@@ -1705,11 +1908,20 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `unidadescapacidades`
+--
+DROP TABLE IF EXISTS `unidadescapacidades`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `unidadescapacidades`  AS  select `u`.`unidadId` AS `cveUnidad`,`ca`.`capDesc` AS `capacidad` from ((`unidades` `u` join `capunidades` `cu` on(`cu`.`unidadId` = `u`.`unidadId`)) join `capacidades` `ca` on(`cu`.`capId` = `ca`.`capId`)) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `unidadestemas`
 --
 DROP TABLE IF EXISTS `unidadestemas`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `unidadestemas`  AS  select `u`.`unidadId` AS `cveUnidad`,`t`.`temaName` AS `Tema`,`t`.`saberTema` AS `saberTema`,`t`.`serTema` AS `SerTema`,`t`.`sabSerTema` AS `sabSerTema` from (`unidades` `u` join `temaunidad` `t` on(`u`.`unidadId` = `t`.`unidadId`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `unidadestemas`  AS  select `u`.`unidadId` AS `cveUnidad`,`t`.`temaId` AS `cveTema`,`t`.`temaName` AS `Tema`,`t`.`saberTema` AS `saberTema`,`t`.`serTema` AS `SerTema`,`t`.`sabSerTema` AS `sabSerTema` from (`unidades` `u` join `temaunidad` `t` on(`u`.`unidadId` = `t`.`unidadId`)) ;
 
 --
 -- Índices para tablas volcadas
@@ -2090,6 +2302,12 @@ ALTER TABLE `periodos`
 --
 ALTER TABLE `personas`
   ADD PRIMARY KEY (`personId`);
+
+--
+-- Indices de la tabla `personasacademias`
+--
+ALTER TABLE `personasacademias`
+  ADD PRIMARY KEY (`perAcaId`);
 
 --
 -- Indices de la tabla `personasfamiliares`
@@ -2523,6 +2741,12 @@ ALTER TABLE `personas`
   MODIFY `personId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `personasacademias`
+--
+ALTER TABLE `personasacademias`
+  MODIFY `perAcaId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `personasfamiliares`
 --
 ALTER TABLE `personasfamiliares`
@@ -2786,6 +3010,12 @@ ALTER TABLE `encuadreplanac`
 --
 ALTER TABLE `estaprepc`
   ADD CONSTRAINT `estaprepc_ibfk_1` FOREIGN KEY (`detPCId`) REFERENCES `detplanclase` (`detPCId`);
+
+--
+-- Filtros para la tabla `evalpa`
+--
+ALTER TABLE `evalpa`
+  ADD CONSTRAINT `evalpa_ibfk_1` FOREIGN KEY (`extra`) REFERENCES `detplanaca` (`dPAcaId`);
 
 --
 -- Filtros para la tabla `evalpc`
