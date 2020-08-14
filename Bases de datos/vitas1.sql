@@ -521,7 +521,7 @@ create view FORACA03B_r0_gral as
 	inner join tutoresGrupo tut on tut.Grupo = g.cveGpo
 	inner join departamentos dep on pc.deptoId = dep.deptoId
 
-/*generar tabla para docentes y academias*/
+/*Generar tabla para docentes y academias*/
 create table personasAcademias(
 	perAcaId smallint primary key auto_increment,
 	personaId smallint,
@@ -529,7 +529,7 @@ create table personasAcademias(
 	createdAt datetime default CURRENT_TIMESTAMP
 );
 
-/*generar una vista para saber las personas que pertenecen a la academia*/
+/*Generar una vista para saber las personas que pertenecen a la academia*/
 create view academiaMiembros as 
 	select a.academiaId as cveAcademia, a.academiaName as academia, 
 	pt.cvePersona, 
@@ -539,7 +539,7 @@ create view academiaMiembros as
 	inner join personasacademias pa on a.academiaId = pa.academiaId
 	inner join trabajadoresDatosGrales pt on pa.personaId = pt.cvePersona
 
-/*generar una vista para cada presidente de academia y la academia a la que pertenece*/
+/*Generar una vista para cada presidente de academia y la academia a la que pertenece*/
 create view academiaPresidente as 
 	select a.academiaId as cveAcademia, a.academiaName as academia, 
 	pt.cvePersona as cvePresidente, 
@@ -552,7 +552,7 @@ create view academiaPresidente as
 	inner join trabajadoresdatosgrales pt on a.presidenteAc = pt.cvePersona 
 	inner join trabajadoresdatosgrales sc on a.secretarioAc = sc.cvePersona
 
-/*generar detalle por unidad de cada FOR-ACA-03-B_r0*/
+/*Generar detalle por unidad de cada FOR-ACA-03-B_r0*/
 create view FORACA03B_r0_evalUnidades as
 	select pc.cvePlanClase,
 	mu.cveUnidad, mu.numeroUnidad, mu.unidad,
@@ -572,6 +572,74 @@ create view FORACA03B_r0_evalUnidades as
 	inner join instevalpc ins on ins.detPCId = dpc.detPCId
 	inner join insteval i on i.instId = ins.instId
 
+/*13/08/2020*/
+/* tabla para control de accesos*/
+create table controlAccesos(
+	controlAccesosId int primary key auto_increment,
+	idPersona smallint,
+	feHrLogIn datetime,
+	feHrLogOff datetime,
+	foreign key(idPersona) references personas(personId)
+);
+
+/*Generar una tabla para aspirantes por area*/
+create table aspAreaCarrera(
+	aspACId smallint primary key auto_increment,
+	aspId smallint,
+	areaId smallint,
+	createdAt datetime default CURRENT_TIMESTAMP
+);
+
+/* Generar vista para aspirantes alumnos y trabajadores */
+create view aspirantesAlumnos as
+	select a.folioPers as cveAsp,
+	p.personId as cvePersona,
+	concat(p.personLn1," ",p.personLn2) as Apellidos,
+	p.personName as Nombre,	 
+	c.cveCarrera, c.carreraName as carrera,
+	c.carreraEsp as area,
+	c.directorId 
+	from carrAspirante ca 
+	inner join aspirantes a on ca.aspId = a.aspId
+	inner join personas p on a.personId = p.personId
+	inner join carreras c on ca.carreraId = c.carreraId
+	where a.tipoAsp = 'Alumno' Order by Apellidos
+
+create view aspirantesTrabajadores as
+	select a.folioPers as cveAsp,
+	p.personId as cvePersona,
+	concat(p.personLn1," ",p.personLn2) as Apellidos,
+	p.personName as Nombre,	 
+	aa.areaId, aa.areaName as areaAdscripcion,
+	d.deptoName as departamento 
+	from aspareacarrera ca 
+	inner join aspirantes a on ca.aspId = a.aspId
+	inner join personas p on a.personId = p.personId
+	inner join areaadscripcion aa on ca.areaId = aa.areaId
+	inner join departamentos d on aa.deptoId = d.deptoId
+	where a.tipoAsp = 'Trabajador' Order by Apellidos
+
+create table controlCambios(
+	controlCambiosId INT AUTO_INCREMENT PRIMARY KEY,​tabla VARCHAR(20),​idRegistro smallint,​ atributo VARCHAR(30),olddata VARCHAR(100),​
+	newdata VARCHAR(100),​act VARCHAR(50),​usr smallint,​createdAt DATETIME default CURRENT_TIMESTAMP​
+);
+create table EvalAlumnoMateria(
+	evAlumnoId smallint primary key not null,
+	numCtrl smallint,
+	materiaId smallint,
+	createdAt DATETIME default CURRENT_TIMESTAMP​
+);
+
+/*14/08/2020*/
+create table detEvalAlumnoUnidades();
+create table detEvalAlumnoInst();
+create table detEvalAlumnoDocs();
 
 
+create procedure insPersonas();
+create procedure insAspirantes();
+create procedure insTrabajadores();
+create procedure insAlumnos();
+create procedure insPlanAcademia();
+create procedure insPlanClase();
 

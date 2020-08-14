@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-08-2020 a las 19:32:26
+-- Tiempo de generación: 14-08-2020 a las 18:44:01
 -- Versión del servidor: 10.4.13-MariaDB
 -- Versión de PHP: 7.2.31
 
@@ -179,17 +179,63 @@ CREATE TABLE `asigmateria` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `aspareacarrera`
+--
+
+CREATE TABLE `aspareacarrera` (
+  `aspACId` smallint(6) NOT NULL,
+  `aspId` smallint(6) DEFAULT NULL,
+  `areaId` smallint(6) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `aspirantes`
 --
 
 CREATE TABLE `aspirantes` (
   `aspId` smallint(6) NOT NULL,
-  `folioMat` varchar(10) NOT NULL,
+  `folioPers` smallint(6) NOT NULL,
   `periodoId` smallint(6) DEFAULT NULL,
   `tipoAsp` enum('Alumno','Trabajador') DEFAULT NULL,
   `personId` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `aspirantesalumnos`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `aspirantesalumnos` (
+`cveAsp` smallint(6)
+,`cvePersona` smallint(6)
+,`Apellidos` varchar(81)
+,`Nombre` varchar(40)
+,`cveCarrera` varchar(5)
+,`carrera` varchar(40)
+,`area` varchar(40)
+,`directorId` smallint(6)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `aspirantestrabajadores`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `aspirantestrabajadores` (
+`cveAsp` smallint(6)
+,`cvePersona` smallint(6)
+,`Apellidos` varchar(81)
+,`Nombre` varchar(40)
+,`areaId` smallint(6)
+,`areaAdscripcion` varchar(30)
+,`departamento` varchar(30)
+);
 
 -- --------------------------------------------------------
 
@@ -325,6 +371,37 @@ CREATE TABLE `compmateria` (
   `hojaAsId` smallint(6) DEFAULT NULL,
   `compId` smallint(6) DEFAULT NULL,
   `createDate` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `controlaccesos`
+--
+
+CREATE TABLE `controlaccesos` (
+  `controlAccesosId` int(11) NOT NULL,
+  `idPersona` smallint(6) DEFAULT NULL,
+  `feHrLogIn` datetime DEFAULT NULL,
+  `feHrLogOff` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `controlcambios`
+--
+
+CREATE TABLE `controlcambios` (
+  `controlCambiosId` int(11) NOT NULL,
+  `tabla` varchar(20) DEFAULT NULL,
+  `idRegistro` smallint(6) DEFAULT NULL,
+  `atributo` varchar(30) DEFAULT NULL,
+  `olddata` mediumtext DEFAULT NULL,
+  `newdata` mediumtext DEFAULT NULL,
+  `act` varchar(50) DEFAULT NULL,
+  `usr` smallint(6) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1168,6 +1245,7 @@ CREATE TABLE `passutem` (
   `passId` smallint(6) NOT NULL,
   `cvePersona` smallint(6) NOT NULL,
   `passPersona` varchar(32) NOT NULL,
+  `activo` bit(1) NOT NULL DEFAULT b'0',
   `createAt` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -1683,6 +1761,24 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `aspirantesalumnos`
+--
+DROP TABLE IF EXISTS `aspirantesalumnos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `aspirantesalumnos`  AS  select `a`.`folioPers` AS `cveAsp`,`p`.`personId` AS `cvePersona`,concat(`p`.`personLn1`,' ',`p`.`personLn2`) AS `Apellidos`,`p`.`personName` AS `Nombre`,`c`.`cveCarrera` AS `cveCarrera`,`c`.`carreraName` AS `carrera`,`c`.`carreraEsp` AS `area`,`c`.`directorId` AS `directorId` from (((`carraspirante` `ca` join `aspirantes` `a` on(`ca`.`aspId` = `a`.`aspId`)) join `personas` `p` on(`a`.`personId` = `p`.`personId`)) join `carreras` `c` on(`ca`.`carreraId` = `c`.`carreraId`)) where `a`.`tipoAsp` = 'Alumno' order by concat(`p`.`personLn1`,' ',`p`.`personLn2`) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `aspirantestrabajadores`
+--
+DROP TABLE IF EXISTS `aspirantestrabajadores`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `aspirantestrabajadores`  AS  select `a`.`folioPers` AS `cveAsp`,`p`.`personId` AS `cvePersona`,concat(`p`.`personLn1`,' ',`p`.`personLn2`) AS `Apellidos`,`p`.`personName` AS `Nombre`,`aa`.`areaId` AS `areaId`,`aa`.`areaName` AS `areaAdscripcion`,`d`.`deptoName` AS `departamento` from ((((`aspareacarrera` `ca` join `aspirantes` `a` on(`ca`.`aspId` = `a`.`aspId`)) join `personas` `p` on(`a`.`personId` = `p`.`personId`)) join `areaadscripcion` `aa` on(`ca`.`areaId` = `aa`.`areaId`)) join `departamentos` `d` on(`aa`.`deptoId` = `d`.`deptoId`)) where `a`.`tipoAsp` = 'Trabajador' order by concat(`p`.`personLn1`,' ',`p`.`personLn2`) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `bibliopa`
 --
 DROP TABLE IF EXISTS `bibliopa`;
@@ -1969,6 +2065,12 @@ ALTER TABLE `asigmateria`
   ADD KEY `materiaId` (`materiaId`);
 
 --
+-- Indices de la tabla `aspareacarrera`
+--
+ALTER TABLE `aspareacarrera`
+  ADD PRIMARY KEY (`aspACId`);
+
+--
 -- Indices de la tabla `aspirantes`
 --
 ALTER TABLE `aspirantes`
@@ -2038,6 +2140,19 @@ ALTER TABLE `compmateria`
   ADD PRIMARY KEY (`coMatId`),
   ADD KEY `hojaAsId` (`hojaAsId`),
   ADD KEY `compId` (`compId`);
+
+--
+-- Indices de la tabla `controlaccesos`
+--
+ALTER TABLE `controlaccesos`
+  ADD PRIMARY KEY (`controlAccesosId`),
+  ADD KEY `idPersona` (`idPersona`);
+
+--
+-- Indices de la tabla `controlcambios`
+--
+ALTER TABLE `controlcambios`
+  ADD PRIMARY KEY (`controlCambiosId`);
 
 --
 -- Indices de la tabla `departamentos`
@@ -2115,7 +2230,6 @@ ALTER TABLE `docintegrador`
 --
 ALTER TABLE `documentos`
   ADD PRIMARY KEY (`dctoId`),
-  ADD KEY `personId` (`personId`),
   ADD KEY `tdocId` (`tdocId`);
 
 --
@@ -2453,6 +2567,12 @@ ALTER TABLE `asigmateria`
   MODIFY `asigId` smallint(6) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `aspareacarrera`
+--
+ALTER TABLE `aspareacarrera`
+  MODIFY `aspACId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `aspirantes`
 --
 ALTER TABLE `aspirantes`
@@ -2505,6 +2625,18 @@ ALTER TABLE `competencias`
 --
 ALTER TABLE `compmateria`
   MODIFY `coMatId` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `controlaccesos`
+--
+ALTER TABLE `controlaccesos`
+  MODIFY `controlAccesosId` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `controlcambios`
+--
+ALTER TABLE `controlcambios`
+  MODIFY `controlCambiosId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `departamentos`
@@ -2927,6 +3059,12 @@ ALTER TABLE `carreras`
 ALTER TABLE `compmateria`
   ADD CONSTRAINT `compmateria_ibfk_1` FOREIGN KEY (`hojaAsId`) REFERENCES `hojaasignatura` (`hojaAsId`),
   ADD CONSTRAINT `compmateria_ibfk_2` FOREIGN KEY (`compId`) REFERENCES `competencias` (`compId`);
+
+--
+-- Filtros para la tabla `controlaccesos`
+--
+ALTER TABLE `controlaccesos`
+  ADD CONSTRAINT `controlaccesos_ibfk_1` FOREIGN KEY (`idPersona`) REFERENCES `personas` (`personId`);
 
 --
 -- Filtros para la tabla `dethoragpo`
